@@ -22,5 +22,6 @@
     "hapi-mongodb": "^6.0.0",
     "joi": "^9.0.0",
     "web-push-encryption": "^2.0.0"
-  }
+  },
+  "homepage": "https://github.com/electricg/push-notifications-server#readme"
 }
