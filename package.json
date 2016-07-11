@@ -1,7 +1,8 @@
 {
-  "name": "push-server",
+  "name": "push-notifications-server",
+  "private": true,
   "version": "1.0.0",
-  "description": "Web Push server made in Node.js and MongoDB",
+  "description": "Push notifications server",
   "main": "server.js",
   "scripts": {
     "start": "node ."
@@ -11,6 +12,10 @@
   },
   "author": "Giulia Alfonsi",
   "license": "MIT",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/electricg/push-notifications-server.git"
+  },
   "dependencies": {
     "bluebird": "^3.4.1",
     "hapi": "^13.5.0",
