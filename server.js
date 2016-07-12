@@ -4,18 +4,39 @@ var mongodb = require('hapi-mongodb');
 var Promise = require('bluebird');
 var webpush = require('web-push-encryption');
 
-var privateAuth = 'xxx'; // secret word to allow push endpoint
 var collectionName = 'clients';
-var port = 8082;
-var host = '127.0.0.1';
-var mongodbUrl = 'mongodb://localhost:27017/clients';
+var welcomeMsg = 'You have successfully subscribed to ELECTRIC_G notifications!';
 
-var gcmAuth = 'xxx'; // GCM API key
+var port = ~~process.env.PORT || 8082;
+var host = process.env.HOST || '127.0.0.1';
+var mongodbUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/clients';
+var allowedOrigins = process.env.CLIENT || 'http://localhost:8085';
+var privateAuth = process.env.PRIVATE_AUTH || 'xxx'; // secret word to allow push endpoint
+var gcmAuth = process.env.GCM_AUTH || 'xxx'; // GCM API key
 
-var sendPush = function(subscriptions, msg) {
-  webpush.setGCMAPIKey(gcmAuth);
+webpush.setGCMAPIKey(gcmAuth);
+
+// Send push with message to a single subscription
+// try and catch is for when subscription is invalid
+// (the webpush library throws errors in that case)
+var sendPush = function(subscription, msg) {
+  try {
+    return webpush.sendWebPush(msg, subscription);
+  } catch(e) {
+    return Promise.reject(e);
+  }
+};
+
+// Send push with welcome message when subscribtion data arrives
+var checkSubscribtion = function(subscription) {
+  return sendPush(subscription, welcomeMsg);
+};
+
+// Send push with message to all the subscriptions
+// the calls are indipendent from each other, we just want to know if all succeed or it at least one fails
+var sendPushes = function(subscriptions, msg) {
   return Promise.map(subscriptions, function(subscription) {
-    webpush.sendWebPush(msg, subscription);
+    sendPush(subscription, msg);
   })
   .then(function(res) {
     return res;
@@ -25,11 +46,25 @@ var sendPush = function(subscriptions, msg) {
   });
 };
 
+var formatError = function(msg, err) {
+  var obj = {
+    status: 0,
+    error: msg
+  };
+
+  if (err) {
+    obj.details = err.message;
+  }
+
+  return obj;
+};
+
 var server = new Hapi.Server();
 
 server.connection({
   port: port,
-  host: host
+  host: host,
+  routes: { cors: { origin: [allowedOrigins] } }
 });
 
 server.register({
@@ -56,6 +91,7 @@ server.register({
   });
 });
 
+// Add subscription
 server.route({
   method: 'POST',
   path: '/clients',
@@ -71,16 +107,23 @@ server.route({
       date: new Date()
     };
     var opt = { w: 1 };
-    db.collection(collectionName).insert(data, opt, function(err, doc) {
-      if (err) {
-        return reply(Hapi.error.internal('Internal MongoDB error', err));
-      }
-      // return reply(doc);
-      if (doc.result.ok === 1 && doc.result.n === 1) {
-        var _id = doc.ops[0]._id;
-        return reply({ status: 1, id: _id });
-      }
-      return reply(Hapi.error.internal('Error inserting the data'));
+    // before saving into the db, send one notification to check the endpoint exists or the keys are ok
+    checkSubscribtion({ endpoint: endpoint, keys: keys })
+    .then(function() {
+      db.collection(collectionName).insert(data, opt, function(err, doc) {
+        if (err) {
+          return reply(formatError('Internal MongoDB error', err)).code(500);
+        }
+        // return reply(doc);
+        if (doc.result.ok === 1 && doc.result.n === 1) {
+          var _id = doc.ops[0]._id;
+          return reply({ status: 1, id: _id });
+        }
+        return reply(formatError('Error inserting the data')).code(500);
+      });
+    })
+    .catch(function(err) {
+      return reply(formatError('Error registering subscription to GCM', err)).code(400);
     });
   },
   config: {
@@ -96,6 +139,7 @@ server.route({
   }
 });
 
+// Delete subscription
 server.route({
   method: 'DELETE',
   path: '/client/{id}',
@@ -105,12 +149,12 @@ server.route({
     var id = request.params.id;
     db.collection(collectionName).remove({ '_id' : new ObjectID(id) }, function(err, doc) {
       if (err) {
-        return reply(Hapi.error.internal('Internal MongoDB error', err));
+        return reply(formatError('Internal MongoDB error', err)).code(500);
       }
       if (doc.result.ok === 1) {
         return reply({ status: 1});
       }
-      return reply(Hapi.error.internal('Error deleting the data'));
+      return reply(formatError('Error deleting the data')).code(500);
     });
   },
   config: {
@@ -122,6 +166,7 @@ server.route({
   }
 });
 
+// Send message to all subscriptions
 server.route({
   method: 'POST',
   path: '/special',
@@ -141,10 +186,10 @@ server.route({
     };
     db.collection(collectionName).find(query, projection).toArray(function(err, doc) {
       if (err) {
-        return reply(Hapi.error.internal('Internal MongoDB error', err));
+        return reply(formatError('Internal MongoDB error', err)).code(500);
       }
       if (doc.length) {
-        return sendPush(doc, msg)
+        return sendPushes(doc, msg)
         .then(function() {
           return reply({ status: 1 });
         })
