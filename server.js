@@ -91,6 +91,30 @@ server.register({
   });
 });
 
+// Test
+server.route({
+  method: 'GET',
+  path: '/giulia',
+  handler: function(request, reply) {
+    reply({ status: 1, text: 'ciao' });
+  }
+});
+
+// Get all subscriptions
+server.route({
+  method: 'GET',
+  path: '/clients',
+  handler: function(request, reply) {
+    var db = request.server.plugins['hapi-mongodb'].db;
+    db.collection(collectionName).find().toArray(function(err, doc) {
+      if (err) {
+        return reply(formatError('Internal MongoDB error', err)).code(500);
+      }
+      reply(doc);
+    });
+  }
+});
+
 // Add subscription
 server.route({
   method: 'POST',
