@@ -1,6 +1,5 @@
 var Hapi = require('hapi');
 var joi = require('joi');
-var mongodb = require('hapi-mongodb');
 var Promise = require('bluebird');
 var webpush = require('web-push-encryption');
 
@@ -68,12 +67,15 @@ server.connection({
 });
 
 server.register({
-  register: mongodb,
+  register: require('hapi-mongodb'),
   options: {
     url : mongodbUrl,
     settings : {
       db : {
         'native_parser' : false
+      },
+      server: {
+        'auto_reconnect': true
       }
     }
   }
