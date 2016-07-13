@@ -98,6 +98,7 @@ server.route({
   method: 'GET',
   path: '/giulia',
   handler: function(request, reply) {
+    console.log('giulia');
     reply({ status: 1, text: 'ciao' });
   }
 });
@@ -210,7 +211,9 @@ server.route({
       endpoint: true,
       keys: true
     };
+    console.log('special 1');
     db.collection(collectionName).find(query, projection).toArray(function(err, doc) {
+      console.log('special 2');
       if (err) {
         return reply(formatError('Internal MongoDB error', err)).code(500);
       }
