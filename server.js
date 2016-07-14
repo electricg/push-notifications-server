@@ -75,7 +75,12 @@ server.register({
         'native_parser' : false
       },
       server: {
-        'auto_reconnect': true
+        'auto_reconnect': true,
+        socketOptions:{
+          connectTimeoutMS:3600000,
+          keepAlive:3600000,
+          socketTimeoutMS:3600000
+        }
       }
     }
   }
