@@ -1,5 +1,6 @@
 var Hapi = require('hapi');
 var joi = require('joi');
+var mongodb = require('hapi-mongodb');
 var Promise = require('bluebird');
 var webpush = require('web-push-encryption');
 
@@ -11,6 +12,7 @@ var host = process.env.HOST || '127.0.0.1';
 var mongodbUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/clients';
 var allowedOrigins = process.env.CLIENT || 'http://localhost:8085';
 var privateAuth = process.env.PRIVATE_AUTH || 'xxx'; // secret word to allow push endpoint
+var privatePath = process.env.PRIVATE_PATH || 'special'; // secret path of the push endpoint
 var gcmAuth = process.env.GCM_AUTH || 'xxx'; // GCM API key
 
 webpush.setGCMAPIKey(gcmAuth);
@@ -67,19 +69,20 @@ server.connection({
 });
 
 server.register({
-  register: require('hapi-mongodb'),
+  register: mongodb,
   options: {
     url : mongodbUrl,
     settings : {
       db : {
         'native_parser' : false
       },
+      // http://stackoverflow.com/a/14418463/471720
       server: {
         'auto_reconnect': true,
-        socketOptions:{
-          connectTimeoutMS:3600000,
-          keepAlive:3600000,
-          socketTimeoutMS:3600000
+        socketOptions: {
+          connectTimeoutMS: 3600000,
+          keepAlive: 3600000,
+          socketTimeoutMS: 3600000
         }
       }
     }
@@ -98,30 +101,31 @@ server.register({
   });
 });
 
-// Test
+// Static endpoint for checking server status and debugging
 server.route({
   method: 'GET',
-  path: '/giulia',
+  path: '/info',
   handler: function(request, reply) {
-    console.log('giulia');
-    reply({ status: 1, text: 'ciao' });
+    console.log('info');
+    reply({ status: 1, version: '1.0.0' });
   }
 });
 
 // Get all subscriptions
-server.route({
-  method: 'GET',
-  path: '/clients',
-  handler: function(request, reply) {
-    var db = request.server.plugins['hapi-mongodb'].db;
-    db.collection(collectionName).find().toArray(function(err, doc) {
-      if (err) {
-        return reply(formatError('Internal MongoDB error', err)).code(500);
-      }
-      reply(doc);
-    });
-  }
-});
+// I personally don't want it enabled
+// server.route({
+//   method: 'GET',
+//   path: '/clients',
+//   handler: function(request, reply) {
+//     var db = request.server.plugins['hapi-mongodb'].db;
+//     db.collection(collectionName).find().toArray(function(err, doc) {
+//       if (err) {
+//         return reply(formatError('Internal MongoDB error', err)).code(500);
+//       }
+//       reply(doc);
+//     });
+//   }
+// });
 
 // Add subscription
 server.route({
@@ -201,7 +205,7 @@ server.route({
 // Send message to all subscriptions
 server.route({
   method: 'POST',
-  path: '/special',
+  path: '/' + privatePath,
   handler: function(request, reply) {
     var key = request.payload.key;
     if (key !== privateAuth) {
@@ -216,9 +220,7 @@ server.route({
       endpoint: true,
       keys: true
     };
-    console.log('special 1');
     db.collection(collectionName).find(query, projection).toArray(function(err, doc) {
-      console.log('special 2');
       if (err) {
         return reply(formatError('Internal MongoDB error', err)).code(500);
       }
@@ -228,6 +230,7 @@ server.route({
           return reply({ status: 1 });
         })
         .catch(function(err) {
+          // not returning an HTTP error status code because it could be a mixture of good and bad pushes 
           return reply({ status: 0, error: err });
         });
       }
