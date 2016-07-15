@@ -25,6 +25,7 @@ describe(method + ' ' + endpoint, function() {
       url: endpoint,
       json: true
     };
+    var statusCode = 500;
 
     request(options, function(err, response) {
       revert.restore();
@@ -32,7 +33,7 @@ describe(method + ' ' + endpoint, function() {
         done(err);
       }
       else {
-        response.statusCode.should.equal(500);
+        response.statusCode.should.equal(statusCode);
         var body = response.body;
         body.status.should.equal(0);
         body.error.should.equal('Internal MongoDB error');
@@ -50,6 +51,8 @@ describe(method + ' ' + endpoint, function() {
       url: endpoint,
       json: true
     };
+    var statusCode = 200;
+    
     var data = _.cloneDeep(helper.goodClient);
     data.forEach(function(item) {
       item.date = new Date();
@@ -62,7 +65,7 @@ describe(method + ' ' + endpoint, function() {
           done(err);
         }
         else {
-          response.statusCode.should.equal(200);
+          response.statusCode.should.equal(statusCode);
           var body = response.body;
           Array.isArray(body).should.equal(true);
           body.length.should.equal(data.length);
@@ -81,13 +84,14 @@ describe(method + ' ' + endpoint, function() {
       url: endpoint,
       json: true
     };
+    var statusCode = 200;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
       }
       else {
-        response.statusCode.should.equal(200);
+        response.statusCode.should.equal(statusCode);
         var body = response.body;
         Array.isArray(body).should.equal(true);
         body.length.should.equal(0);

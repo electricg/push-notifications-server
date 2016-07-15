@@ -15,13 +15,14 @@ describe(method + ' ' + endpoint, function() {
       url: endpoint,
       json: true
     };
+    var statusCode = 200;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
       }
       else {
-        response.statusCode.should.equal(200);
+        response.statusCode.should.equal(statusCode);
         var body = response.body;
         body.status.should.equal(1);
         body.version.should.equal('1.0.0');

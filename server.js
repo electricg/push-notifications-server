@@ -202,14 +202,21 @@ server.route({
   handler: function(request, reply) {
     var ObjectID = Mongoose.Types.ObjectId;
     var id = request.params.id;
-    collection.remove({ '_id' : new ObjectID(id) }, function(err, doc) {
-      if (err) {
-        return reply(formatError('Internal MongoDB error', err)).code(500);
-      }
+    var _id;
+    try {
+      _id = new ObjectID(id);
+    } catch(e) {
+      return reply(formatError('Not Found')).code(404);
+    }
+    collection.remove({ '_id' : _id })
+    .then(function(doc) {
       if (doc.result.ok === 1) {
         return reply({ status: 1});
       }
       return reply(formatError('Error deleting the data')).code(500);
+    })
+    .catch(function(err) {
+      return reply(formatError('Internal MongoDB error', err)).code(500);
     });
   },
   config: {
