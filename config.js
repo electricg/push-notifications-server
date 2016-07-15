@@ -6,4 +6,5 @@ module.exports = {
   privateAuth: process.env.PRIVATE_AUTH || 'xxx', // secret word to allow push endpoint
   privatePath: process.env.PRIVATE_PATH || 'special', // secret path of the push endpoint
   gcmAuth: process.env.GCM_AUTH || 'xxx', // GCM API key
+  collectionName: 'clients',
 };

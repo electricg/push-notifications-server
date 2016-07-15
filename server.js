@@ -5,7 +5,6 @@ var Promise = require('bluebird');
 var webpush = require('web-push-encryption');
 var config = require('./config');
 
-var collectionName = 'clients';
 var welcomeMsg = 'You have successfully subscribed to ELECTRIC_G notifications!';
 
 // DB
@@ -28,7 +27,7 @@ var connect = function() {
 };
 connect();
 var db = Mongoose.connection;
-var collection = db.collection(collectionName);
+var collection = db.collection(config.collectionName);
 var reconnect = function() {
   if (db.readyState === 0) {
     connect();
@@ -130,11 +129,12 @@ server.route({
   method: 'GET',
   path: '/clients',
   handler: function(request, reply) {
-    collection.find().toArray(function(err, doc) {
-      if (err) {
-        return reply(formatError('Internal MongoDB error', err)).code(500);
-      }
+    collection.find().toArray()
+    .then(function(doc) {
       reply(doc);
+    })
+    .catch(function(err) {  
+      return reply(formatError('Internal MongoDB error', err)).code(500);
     });
   },
   config: {
@@ -149,11 +149,11 @@ server.route({
   handler: function(request, reply) {
     var endpoint = request.payload.endpoint;
     var keys = request.payload.keys;
-    var ip = request.info.remoteAddress + ':' + request.info.remotePort;
+    // var ip = request.info.remoteAddress + ':' + request.info.remotePort;
     var data = {
       endpoint: endpoint,
       keys: keys,
-      ip: ip,
+      // ip: ip,
       date: new Date()
     };
     var opt = { w: 1 };
