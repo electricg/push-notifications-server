@@ -325,6 +325,8 @@ describe(method + ' ' + endpoint, function() {
           var body = response.body;
           response.statusCode.should.equal(statusCode);
           body.status.should.equal(1);
+          body.succeeded.should.equal(2);
+          body.failed.should.equal(0);
           done();
         }
       });
@@ -368,7 +370,7 @@ describe(method + ' ' + endpoint, function() {
           return '/yyy';
         }
       })
-      .post('/xxx').times(2)
+      .post('/xxx')
         .reply(201)
       .post('/yyy').times(2)
         .replyWithError({ statusCode: 400, statusMessage: 'UnauthorizedRegistration' });
@@ -383,6 +385,8 @@ describe(method + ' ' + endpoint, function() {
           var body = response.body;
           response.statusCode.should.equal(statusCode);
           body.status.should.equal(0);
+          body.succeeded.should.equal(1);
+          body.failed.should.equal(2);
           done();
         }
       });

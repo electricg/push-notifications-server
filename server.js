@@ -69,8 +69,24 @@ var checkSubscribtion = function(subscription) {
 // Send push with message to all the subscriptions
 // the calls are indipendent from each other, we just want to know if all succeed or it at least one fails
 var sendPushes = function(subscriptions, msg) {
+  var e = 0;
+  var r = 0;
   return Promise.map(subscriptions, function(subscription) {
-    return sendPush(subscription, msg);
+    return sendPush(subscription, msg)
+    .then(function(res) {
+      r++;
+      return res;
+    })
+    .catch(function(err) {
+      e++;
+      return Promise.reject(err);
+    });
+  })
+  .then(function() {
+    return { e: e, r: r };
+  })
+  .catch(function() {
+    return Promise.reject({ e: e, r: r });
   });
 };
 
@@ -244,12 +260,12 @@ server.route({
     .then(function(doc) {
       if (doc.length) {
         return sendPushes(doc, msg)
-        .then(function() {
-          return reply({ status: 1 });
+        .then(function(res) {
+          return reply({ status: 1, failed: res.e, succeeded: res.r });
         })
         .catch(function(err) {
           // not returning an HTTP error status code because it could be a mixture of good and bad pushes 
-          return reply({ status: 0, error: err });
+          return reply({ status: 0, failed: err.e, succeeded: err.r });
         });
       }
       else {
