@@ -368,9 +368,9 @@ describe(method + ' ' + endpoint, function() {
           return '/yyy';
         }
       })
-      .post('/xxx')
+      .post('/xxx').times(2)
         .reply(201)
-      .post('/yyy')
+      .post('/yyy').times(2)
         .replyWithError({ statusCode: 400, statusMessage: 'UnauthorizedRegistration' });
 
     helper.dbCollection.insert(data)
