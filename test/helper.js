@@ -2,8 +2,8 @@
 var Mongoose = require('mongoose');
 var MMongoose = Mongoose.Mongoose;
 var mongoose = new MMongoose();
-// var mongoose = require('mongoose');
 var mockgoose = require('mockgoose');
+var nock = require('nock');
 var config = require('../config');
 var server;
 
@@ -16,16 +16,18 @@ module.exports.goodClient = [
       'p256dh' : 'BOAIOs5VFlB7pOVaYeAhU_ZIKtQg5NIKQ7au039IuKHdOslq8At8aXTA6ei3vEVSwh3dGKlCoIeqS-EcNidCTRg=',
       'auth' : '5z1_fh3BTWc7txBFut3KdQ=='
     }
-  },
+  }
+];
+module.exports.badClients = [
   {
-    'endpoint' : 'https://android.googleapis.com/gcm/send/dcqAlHtjC84:APA91bHj7Qp1d-ZPy83313ohQaE_CSeSvczh-3Qfj1dyzkAV_K3FTSfqXH2LmS_AF9uv1TmcAneMH2MHSeqRHxo9QfoblfYODySeV_2L1kV0pEhEBbBHhXokOzVAZyvGGpT0K07rAPqc',
+    'endpoint' : 'https://android.googleapis.com/gcm/send/dcqAlHtjC84:APA91bHj7Qp1d-ZPy83313ohQaE_CSeSvczh-3Qfj1dyzkAV_K3FTSfqXH2LmS_AF9uv1TmcAneMH2MHSeqRHxo9QfoblfYODySeV_2L1kV0pEhEBbBHhXokOzVAZyvGGpT0K07rAPqx',
     'keys' : {
-      'p256dh' : 'BOAIOs5VFlB7pOVaYeAhU_ZIKtQg5NIKQ7au039IuKHdOslq8At8aXTA6ei3vEVSwh3dGKlCoIeqS-EcNidCTRg=',
-      'auth' : '5z1_fh3BTWc7txBFut3KdQ=='
+      'p256dh' : 'BOAIOs5VFlB7pOVaYeAhU_ZIKtQg5NIKQ7au039IuKHdOslq8At8aXTA6ei3vEVSwh3dGKlCoIeqS-EcNidCTRgx',
+      'auth' : '5z1_fh3BTWc7txBFut3KdQ=x'
     }
   }
 ];
-module.exports.badClients = [];
+module.exports.gcmUrl = /(gcm-http.googleapis\.com)|(android\.googleapis\.com)/;
 
 
 var dbCollection = Mongoose.connection.collection(config.collectionName);
@@ -43,6 +45,7 @@ before(function(done) {
 });
 
 afterEach(function(done) {
+  nock.cleanAll();
   if (mongoose.isMocked === true) {
     mockgoose.reset(function() {
       dbCollection.remove()

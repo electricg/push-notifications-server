@@ -1,5 +1,4 @@
 /* global describe, it */
-/* exported helper */
 var Promise = require('bluebird');
 var request = require('request');
 var sinon = require('sinon');

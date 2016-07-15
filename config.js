@@ -7,4 +7,5 @@ module.exports = {
   privatePath: process.env.PRIVATE_PATH || 'special', // secret path of the push endpoint
   gcmAuth: process.env.GCM_AUTH || 'xxx', // GCM API key
   collectionName: 'clients',
+  welcomeMsg: 'You have successfully subscribed to ELECTRIC_G notifications!',
 };

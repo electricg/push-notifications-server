@@ -5,9 +5,8 @@ var Promise = require('bluebird');
 var webpush = require('web-push-encryption');
 var config = require('./config');
 
-var welcomeMsg = 'You have successfully subscribed to ELECTRIC_G notifications!';
 
-// DB
+//=== DB
 var connect = function() {
   Mongoose.connect(config.mongodbUrl, {
     promiseLibrary: Promise,
@@ -47,6 +46,8 @@ db.db.on('reconnected', function() {
   console.log('Reconnected to MongoDB');
 });
 
+
+//=== Web Push
 webpush.setGCMAPIKey(config.gcmAuth);
 
 // Send push with message to a single subscription
@@ -62,7 +63,7 @@ var sendPush = function(subscription, msg) {
 
 // Send push with welcome message when subscribtion data arrives
 var checkSubscribtion = function(subscription) {
-  return sendPush(subscription, welcomeMsg);
+  return sendPush(subscription, config.welcomeMsg);
 };
 
 // Send push with message to all the subscriptions
@@ -79,6 +80,7 @@ var sendPushes = function(subscriptions, msg) {
   });
 };
 
+
 var formatError = function(msg, err) {
   var obj = {
     status: 0,
@@ -86,12 +88,14 @@ var formatError = function(msg, err) {
   };
 
   if (err) {
-    obj.details = err.message;
+    obj.details = err.message || (err.statusCode + ' ' + err.statusMessage);
   }
 
   return obj;
 };
 
+
+//=== Server
 var server = new Hapi.Server();
 
 server.connection({
@@ -160,16 +164,17 @@ server.route({
     // before saving into the db, send one notification to check the endpoint exists or the keys are ok
     checkSubscribtion({ endpoint: endpoint, keys: keys })
     .then(function() {
-      collection.insert(data, opt, function(err, doc) {
-        if (err) {
-          return reply(formatError('Internal MongoDB error', err)).code(500);
-        }
-        // return reply(doc);
+      collection.insert(data, opt)
+      .then(function(doc) {
+        // console.log(doc);
         if (doc.result.ok === 1 && doc.result.n === 1) {
           var _id = doc.ops[0]._id;
           return reply({ status: 1, id: _id });
         }
         return reply(formatError('Error inserting the data')).code(500);
+      })
+      .catch(function(err) {
+        return reply(formatError('Internal MongoDB error', err)).code(500);
       });
     })
     .catch(function(err) {
