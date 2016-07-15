@@ -1,50 +1,12 @@
 var Hapi = require('hapi');
 var joi = require('joi');
-var Mongoose = require('mongoose');
 var Promise = require('bluebird');
 var webpush = require('web-push-encryption');
-var config = require('./config');
+var config = require('./src/config');
+var db = require('./src/db');
 
 
-//=== DB
-var connect = function() {
-  Mongoose.connect(config.mongodbUrl, {
-    promiseLibrary: Promise,
-    server: {
-      'auto_reconnect': true,
-      socketOptions: {
-        connectTimeoutMS: 3600000,
-        keepAlive: 3600000,
-        socketTimeoutMS: 3600000
-      }
-    }
-  }, function(err) {
-    if (err) {
-      console.log('error', err);
-    }
-  });
-};
-connect();
-var db = Mongoose.connection;
-var collection = db.collection(config.collectionName);
-var reconnect = function() {
-  if (db.readyState === 0) {
-    connect();
-    db = Mongoose.connection;
-  }
-};
-db.db.on('connected', function() {
-  console.log('Connection established to MongoDB');
-});
-db.db.on('error', function(err) {
-  console.log('error', err.name + ': ' + err.message);
-});
-db.db.on('disconnected', function() {
-  console.log('error', 'Lost MongoDB connection');
-});
-db.db.on('reconnected', function() {
-  console.log('Reconnected to MongoDB');
-});
+db.connect();
 
 
 //=== Web Push
@@ -123,7 +85,7 @@ server.start(function(err) {
 });
 
 var pre = function(request, reply) {
-  reconnect();
+  db.reconnect();
   return reply();
 };
 
@@ -143,7 +105,7 @@ server.route({
   method: 'GET',
   path: '/clients',
   handler: function(request, reply) {
-    collection.find().toArray()
+    db.collection.find().toArray()
     .then(function(doc) {
       reply(doc);
     })
@@ -174,7 +136,7 @@ server.route({
     // before saving into the db, send one notification to check the endpoint exists or the keys are ok
     checkSubscribtion({ endpoint: endpoint, keys: keys })
     .then(function() {
-      collection.insert(data, opt)
+      db.collection.insert(data, opt)
       .then(function(doc) {
         // console.log(doc);
         if (doc.result.ok === 1 && doc.result.n === 1) {
@@ -210,7 +172,7 @@ server.route({
   method: 'DELETE',
   path: '/client/{id}',
   handler: function(request, reply) {
-    var ObjectID = Mongoose.Types.ObjectId;
+    var ObjectID = db.Mongoose.Types.ObjectId;
     var id = request.params.id;
     var _id;
     try {
@@ -218,7 +180,7 @@ server.route({
     } catch(e) {
       return reply(formatError('Not Found')).code(404);
     }
-    collection.remove({ '_id' : _id })
+    db.collection.remove({ '_id' : _id })
     .then(function(doc) {
       if (doc.result.ok === 1) {
         return reply({ status: 1});
@@ -256,7 +218,7 @@ server.route({
       endpoint: true,
       keys: true
     };
-    collection.find(query, projection).toArray()
+    db.collection.find(query, projection).toArray()
     .then(function(doc) {
       if (doc.length) {
         return sendPushes(doc, msg)

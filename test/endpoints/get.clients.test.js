@@ -11,7 +11,7 @@ var baseUrl = 'http://' + helper.config.host + ':' + helper.config.port;
 
 describe(method + ' ' + endpoint, function() {
   it('should fail and return 500 because of a problem with the db', function(done) {
-    var revert = sinon.stub(helper.dbCollection, 'find', function() {
+    var revert = sinon.stub(helper.db.collection, 'find', function() {
       return {
         toArray: function() {
           return Promise.reject(new Error('fake db error'));
@@ -58,7 +58,7 @@ describe(method + ' ' + endpoint, function() {
       item.date = new Date();
     });
 
-    helper.dbCollection.insert(data)
+    helper.db.collection.insert(data)
     .then(function() {
       request(options, function(err, response) {
         if (err) {

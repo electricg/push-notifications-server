@@ -4,10 +4,13 @@ var MMongoose = Mongoose.Mongoose;
 var mongoose = new MMongoose();
 var mockgoose = require('mockgoose');
 var nock = require('nock');
-var config = require('../config');
+var bluebird = require('bluebird');
+var config = require('../src/config');
+var db = require('../src/db');
 var server;
 
 module.exports.config = config;
+module.exports.db = db;
 
 module.exports.goodClients = [
   {
@@ -30,13 +33,12 @@ module.exports.badClients = [
 module.exports.gcmUrl = /(gcm-http.googleapis\.com)|(android\.googleapis\.com)/;
 
 
-var dbCollection = Mongoose.connection.collection(config.collectionName);
-module.exports.dbCollection = dbCollection;
-
 before(function(done) {
   mockgoose(mongoose)
   .then(function() {
-    mongoose.connect('mongodb://localhost:27017/clients', function(err) {
+    mongoose.connect(config.mongodbUrl, {
+      promiseLibrary: bluebird
+    }, function(err) {
       server = require('../server');
       done(err);
     });
@@ -48,7 +50,7 @@ afterEach(function(done) {
   nock.cleanAll();
   if (mongoose.isMocked === true) {
     mockgoose.reset(function() {
-      dbCollection.remove()
+      db.collection.remove()
       .then(function() {
         done();
       })

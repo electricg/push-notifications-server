@@ -561,7 +561,7 @@ describe(method + ' ' + endpoint, function() {
       .post('/xxx')
         .reply(201);
 
-    var revert = sinon.stub(helper.dbCollection, 'insert', function() {
+    var revert = sinon.stub(helper.db.collection, 'insert', function() {
       return Promise.reject(new Error('fake db error'));
     });
 
@@ -601,7 +601,7 @@ describe(method + ' ' + endpoint, function() {
       .post('/xxx')
         .reply(201);
 
-    var revert = sinon.stub(helper.dbCollection, 'insert', function() {
+    var revert = sinon.stub(helper.db.collection, 'insert', function() {
       return Promise.resolve({
         result: {
           ok: 0,
