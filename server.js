@@ -1,21 +1,54 @@
 var Hapi = require('hapi');
 var joi = require('joi');
-var mongodb = require('hapi-mongodb');
+var Mongoose = require('mongoose');
 var Promise = require('bluebird');
 var webpush = require('web-push-encryption');
+var config = require('./config');
 
 var collectionName = 'clients';
 var welcomeMsg = 'You have successfully subscribed to ELECTRIC_G notifications!';
 
-var port = ~~process.env.PORT || 8082;
-var host = process.env.HOST || '127.0.0.1';
-var mongodbUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/clients';
-var allowedOrigins = process.env.CLIENT || 'http://localhost:8085';
-var privateAuth = process.env.PRIVATE_AUTH || 'xxx'; // secret word to allow push endpoint
-var privatePath = process.env.PRIVATE_PATH || 'special'; // secret path of the push endpoint
-var gcmAuth = process.env.GCM_AUTH || 'xxx'; // GCM API key
+// DB
+var connect = function() {
+  Mongoose.connect(config.mongodbUrl, {
+    promiseLibrary: Promise,
+    server: {
+      'auto_reconnect': true,
+      socketOptions: {
+        connectTimeoutMS: 3600000,
+        keepAlive: 3600000,
+        socketTimeoutMS: 3600000
+      }
+    }
+  }, function(err) {
+    if (err) {
+      console.log('error', err);
+    }
+  });
+};
+connect();
+var db = Mongoose.connection;
+var collection = db.collection(collectionName);
+var reconnect = function() {
+  if (db.readyState === 0) {
+    connect();
+    db = Mongoose.connection;
+  }
+};
+db.db.on('connected', function() {
+  console.log('Connection established to MongoDB');
+});
+db.db.on('error', function(err) {
+  console.log('error', err.name + ': ' + err.message);
+});
+db.db.on('disconnected', function() {
+  console.log('error', 'Lost MongoDB connection');
+});
+db.db.on('reconnected', function() {
+  console.log('Reconnected to MongoDB');
+});
 
-webpush.setGCMAPIKey(gcmAuth);
+webpush.setGCMAPIKey(config.gcmAuth);
 
 // Send push with message to a single subscription
 // try and catch is for when subscription is invalid
@@ -63,43 +96,23 @@ var formatError = function(msg, err) {
 var server = new Hapi.Server();
 
 server.connection({
-  port: port,
-  host: host,
-  routes: { cors: { origin: [allowedOrigins] } }
+  port: config.port,
+  host: config.host,
+  routes: { cors: { origin: [config.allowedOrigins] } }
 });
 
-server.register({
-  register: mongodb,
-  options: {
-    url : mongodbUrl,
-    settings : {
-      db : {
-        'native_parser' : false
-      },
-      // http://stackoverflow.com/a/14418463/471720
-      server: {
-        'auto_reconnect': true,
-        socketOptions: {
-          connectTimeoutMS: 3600000,
-          keepAlive: 3600000,
-          socketTimeoutMS: 3600000
-        }
-      }
-    }
-  }
-}, function(err) {
+server.start(function(err) {
   if (err) {
     console.error(err);
     throw err;
   }
-  server.start(function(err) {
-    if (err) {
-      console.error(err);
-      throw err;
-    }
-    console.log('Server started at: ', server.info.uri);
-  });
+  console.log('Server started at: ', server.info.uri);
 });
+
+var pre = function(request, reply) {
+  reconnect();
+  return reply();
+};
 
 // Static endpoint for checking server status and debugging
 server.route({
@@ -113,26 +126,27 @@ server.route({
 
 // Get all subscriptions
 // I personally don't want it enabled
-// server.route({
-//   method: 'GET',
-//   path: '/clients',
-//   handler: function(request, reply) {
-//     var db = request.server.plugins['hapi-mongodb'].db;
-//     db.collection(collectionName).find().toArray(function(err, doc) {
-//       if (err) {
-//         return reply(formatError('Internal MongoDB error', err)).code(500);
-//       }
-//       reply(doc);
-//     });
-//   }
-// });
+server.route({
+  method: 'GET',
+  path: '/clients',
+  handler: function(request, reply) {
+    collection.find().toArray(function(err, doc) {
+      if (err) {
+        return reply(formatError('Internal MongoDB error', err)).code(500);
+      }
+      reply(doc);
+    });
+  },
+  config: {
+    pre: [{ method: pre }]
+  }
+});
 
 // Add subscription
 server.route({
   method: 'POST',
   path: '/clients',
   handler: function(request, reply) {
-    var db = request.server.plugins['hapi-mongodb'].db;
     var endpoint = request.payload.endpoint;
     var keys = request.payload.keys;
     var ip = request.info.remoteAddress + ':' + request.info.remotePort;
@@ -146,7 +160,7 @@ server.route({
     // before saving into the db, send one notification to check the endpoint exists or the keys are ok
     checkSubscribtion({ endpoint: endpoint, keys: keys })
     .then(function() {
-      db.collection(collectionName).insert(data, opt, function(err, doc) {
+      collection.insert(data, opt, function(err, doc) {
         if (err) {
           return reply(formatError('Internal MongoDB error', err)).code(500);
         }
@@ -163,6 +177,7 @@ server.route({
     });
   },
   config: {
+    pre: [{ method: pre }],
     validate: {
       payload: {
         endpoint: joi.string().required(), // TODO check length and/or regex
@@ -180,10 +195,9 @@ server.route({
   method: 'DELETE',
   path: '/client/{id}',
   handler: function(request, reply) {
-    var db = request.server.plugins['hapi-mongodb'].db;
-    var ObjectID = request.server.plugins['hapi-mongodb'].ObjectID;
+    var ObjectID = Mongoose.Types.ObjectId;
     var id = request.params.id;
-    db.collection(collectionName).remove({ '_id' : new ObjectID(id) }, function(err, doc) {
+    collection.remove({ '_id' : new ObjectID(id) }, function(err, doc) {
       if (err) {
         return reply(formatError('Internal MongoDB error', err)).code(500);
       }
@@ -194,6 +208,7 @@ server.route({
     });
   },
   config: {
+    pre: [{ method: pre }],
     validate: {
       params: {
         id: joi.string().required() // TODO check length and/or regex
@@ -205,14 +220,13 @@ server.route({
 // Send message to all subscriptions
 server.route({
   method: 'POST',
-  path: '/' + privatePath,
+  path: '/' + config.privatePath,
   handler: function(request, reply) {
     var key = request.payload.key;
-    if (key !== privateAuth) {
+    if (key !== config.privateAuth) {
       return reply().code(401);
     }
 
-    var db = request.server.plugins['hapi-mongodb'].db;
     var msg = request.payload.msg;
     var query = {};
     var projection = {
@@ -220,7 +234,7 @@ server.route({
       endpoint: true,
       keys: true
     };
-    db.collection(collectionName).find(query, projection).toArray(function(err, doc) {
+    collection.find(query, projection).toArray(function(err, doc) {
       if (err) {
         return reply(formatError('Internal MongoDB error', err)).code(500);
       }
@@ -240,6 +254,7 @@ server.route({
     });
   },
   config: {
+    pre: [{ method: pre }],
     validate: {
       payload: {
         key: joi.string().required(),

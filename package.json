@@ -5,7 +5,11 @@
   "description": "Push notifications server",
   "main": "server.js",
   "scripts": {
-    "start": "node ."
+    "start": "node .",
+    "lint": "./node_modules/.bin/jshint . --exclude-path .gitignore --reporter=./node_modules/jshint-full-path/index.js",
+    "covertest": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha test/{**,**/*}/*.test.js",
+    "pretest": "npm run-script lint",
+    "test": "npm run-script covertest"
   },
   "engines": {
     "node": "5"
@@ -13,15 +17,25 @@
   "author": "Giulia Alfonsi",
   "license": "MIT",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/electricg/push-notifications-server.git"
+    "type": "git",
+    "url": "https://github.com/electricg/push-notifications-server.git"
   },
   "dependencies": {
     "bluebird": "^3.4.1",
     "hapi": "^13.5.0",
-    "hapi-mongodb": "^6.0.0",
     "joi": "^9.0.0",
+    "mongoose": "^4.5.4",
     "web-push-encryption": "^2.0.0"
   },
-  "homepage": "https://github.com/electricg/push-notifications-server#readme"
+  "homepage": "https://github.com/electricg/push-notifications-server#readme",
+  "devDependencies": {
+    "istanbul": "^0.4.4",
+    "jshint": "^2.9.2",
+    "jshint-full-path": "^1.1.1",
+    "mocha": "^2.5.3",
+    "mockgoose": "^6.0.3",
+    "nock": "^8.0.0",
+    "request": "^2.73.0",
+    "should": "^9.0.2"
+  }
 }
