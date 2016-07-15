@@ -246,10 +246,8 @@ server.route({
       endpoint: true,
       keys: true
     };
-    collection.find(query, projection).toArray(function(err, doc) {
-      if (err) {
-        return reply(formatError('Internal MongoDB error', err)).code(500);
-      }
+    collection.find(query, projection).toArray()
+    .then(function(doc) {
       if (doc.length) {
         return sendPushes(doc, msg)
         .then(function() {
@@ -263,6 +261,9 @@ server.route({
       else {
         return reply({ status: 0, message: 'No keys registered' });
       }
+    })
+    .catch(function(err) {
+      return reply(formatError('Internal MongoDB error', err)).code(500);
     });
   },
   config: {
