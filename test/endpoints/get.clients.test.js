@@ -53,7 +53,7 @@ describe(method + ' ' + endpoint, function() {
     };
     var statusCode = 200;
     
-    var data = _.cloneDeep(helper.goodClient);
+    var data = _.cloneDeep(helper.goodClients);
     data.forEach(function(item) {
       item.date = new Date();
     });

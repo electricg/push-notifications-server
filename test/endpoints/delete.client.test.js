@@ -131,7 +131,7 @@ describe(method + ' ' + endpoint, function() {
     };
     var statusCode = 200;
 
-    var data = _.cloneDeep(helper.goodClient[0]);
+    var data = _.cloneDeep(helper.goodClients[0]);
     data.date = new Date();
 
     helper.dbCollection.insert(data)

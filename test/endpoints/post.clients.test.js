@@ -37,7 +37,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail because of no endpoint value in payload', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
     delete payload.endpoint;
 
     var options = {
@@ -66,7 +66,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail because of no keys.p256dh value in payload', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
     delete payload.keys.p256dh;
 
     var options = {
@@ -95,7 +95,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail because of no keys.auth value in payload', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
     delete payload.keys.auth;
 
     var options = {
@@ -124,7 +124,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail because of additional value in payload not expected', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
     payload.fakeParam = 'xxx';
 
     var options = {
@@ -153,7 +153,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail because of not string endpoint value in payload', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
     payload.endpoint = 1;
 
     var options = {
@@ -182,7 +182,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail because of not string keys.p256dh value in payload', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
     payload.keys.p256dh = 1;
 
     var options = {
@@ -211,7 +211,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail because of not string keys.auth value in payload', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
     payload.keys.auth = 1;
 
     var options = {
@@ -240,7 +240,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail and return 400 because of invalid endpoint', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
     payload.endpoint = 'xxx';
 
     var options = {
@@ -269,7 +269,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail and return 400 because of invalid keys.p256dh', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
     payload.keys.p256dh = 'xxx';
 
     var options = {
@@ -298,7 +298,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail and return 400 because of invalid keys.auth', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
     payload.keys.auth = 'xxx';
 
     var options = {
@@ -327,7 +327,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail and return 400 because of unauthorized endpoint', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
     payload.endpoint = helper.badClients[0].endpoint;
 
     var options = {
@@ -366,7 +366,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail and return 400 because of unauthorized keys.p256dh', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
     payload.keys.p256dh = helper.badClients[0].keys.p256dh;
 
     var options = {
@@ -395,7 +395,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail and return 400 because of unauthorized keys.auth', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
     payload.keys.auth = helper.badClients[0].keys.auth;
 
     var options = {
@@ -434,7 +434,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail and return 400 because of an error with GCM server', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
 
     var options = {
       method: method,
@@ -472,7 +472,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail and return 400 because GCM server was unreachable', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
 
     var options = {
       method: method,
@@ -509,7 +509,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should succeed to register a valid client', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
 
     var options = {
       method: method,
@@ -543,7 +543,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail and return 500 because of a problem with the db', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
 
     var options = {
       method: method,
@@ -583,7 +583,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail and return 500 because of a problem with inserting the data into the db', function(done) {
-    var payload = _.cloneDeep(helper.goodClient[0]);
+    var payload = _.cloneDeep(helper.goodClients[0]);
 
     var options = {
       method: method,

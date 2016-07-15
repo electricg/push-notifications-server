@@ -70,13 +70,7 @@ var checkSubscribtion = function(subscription) {
 // the calls are indipendent from each other, we just want to know if all succeed or it at least one fails
 var sendPushes = function(subscriptions, msg) {
   return Promise.map(subscriptions, function(subscription) {
-    sendPush(subscription, msg);
-  })
-  .then(function(res) {
-    return res;
-  })
-  .catch(function(err) {
-    return err;
+    return sendPush(subscription, msg);
   });
 };
 

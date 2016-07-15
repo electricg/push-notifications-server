@@ -1,10 +1,10 @@
 /* global describe, it */
 var Promise = require('bluebird');
-// var nock = require('nock');
+var nock = require('nock');
 var request = require('request');
 var should = require('should');
 var sinon = require('sinon');
-// var _ = require('lodash');
+var _ = require('lodash');
 var helper = require('../helper');
 
 var endpoint = '/' + helper.config.privatePath;
@@ -287,12 +287,106 @@ describe(method + ' ' + endpoint, function() {
   });
 
 
-  // it('should succeed with all clients succeeding', function(done) {
+  it('should succeed with all clients succeeding', function(done) {
+    var payload = {
+      key: helper.config.privateAuth,
+      msg: 'xxx'
+    };
 
-  // });
+    var options = {
+      method: method,
+      baseUrl: baseUrl,
+      url: endpoint,
+      json: true,
+      body: payload
+    };
+    var statusCode = 200;
+
+    var data = _.cloneDeep(helper.goodClients);
+    data.push(_.cloneDeep(helper.goodClients[0]));
+    data.forEach(function(item) {
+      item.date = new Date();
+    });
+
+    nock(helper.gcmUrl)
+      .filteringPath(function() {
+        return '/xxx';
+      })
+      .post('/xxx').times(data.length)
+        .reply(201);
+
+    helper.dbCollection.insert(data)
+    .then(function() {
+      request(options, function(err, response) {
+        if (err) {
+          done(err);
+        }
+        else {
+          var body = response.body;
+          response.statusCode.should.equal(statusCode);
+          body.status.should.equal(1);
+          done();
+        }
+      });
+    })
+    .catch(done);
+  });
 
 
-  // it('should succeeding with at least one client failing', function(done) {
+  it('should succeed with at least one client failing', function(done) {
+    var payload = {
+      key: helper.config.privateAuth,
+      msg: 'xxx'
+    };
 
-  // });
+    var options = {
+      method: method,
+      baseUrl: baseUrl,
+      url: endpoint,
+      json: true,
+      body: payload
+    };
+    var statusCode = 200;
+
+    var data = _.cloneDeep(helper.goodClients);
+    data.push(_.cloneDeep(helper.goodClients[0]));
+    data.push(_.cloneDeep(helper.goodClients[0]));
+    data[1].endpoint += 'x';
+    data[2].endpoint += 'x';
+    data.forEach(function(item) {
+      item.date = new Date();
+    });
+    var goodP = helper.goodClients[0].endpoint.split('/').pop();
+
+    nock(helper.gcmUrl)
+      .filteringPath(function(p) {
+        var myP = p.split('/').pop();
+        if (myP === goodP) {
+          return '/xxx';
+        }
+        else {
+          return '/yyy';
+        }
+      })
+      .post('/xxx')
+        .reply(201)
+      .post('/yyy')
+        .replyWithError({ statusCode: 400, statusMessage: 'UnauthorizedRegistration' });
+
+    helper.dbCollection.insert(data)
+    .then(function() {
+      request(options, function(err, response) {
+        if (err) {
+          done(err);
+        }
+        else {
+          var body = response.body;
+          response.statusCode.should.equal(statusCode);
+          body.status.should.equal(0);
+          done();
+        }
+      });
+    })
+    .catch(done);
+  });
 });
