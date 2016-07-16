@@ -1,53 +1,9 @@
 var Hapi = require('hapi');
 var joi = require('joi');
 var Promise = require('bluebird');
-var webpush = require('web-push-encryption');
 var config = require('./config');
 var db = require('./db');
-
-
-//=== Web Push
-webpush.setGCMAPIKey(config.gcmAuth);
-
-// Send push with message to a single subscription
-// try and catch is for when subscription is invalid
-// (the webpush library throws errors in that case)
-var sendPush = function(subscription, msg) {
-  try {
-    return webpush.sendWebPush(msg, subscription);
-  } catch(e) {
-    return Promise.reject(e);
-  }
-};
-
-// Send push with welcome message when subscribtion data arrives
-var checkSubscribtion = function(subscription) {
-  return sendPush(subscription, config.welcomeMsg);
-};
-
-// Send push with message to all the subscriptions
-// the calls are indipendent from each other, we just want to know if all succeed or it at least one fails
-var sendPushes = function(subscriptions, msg) {
-  var e = 0;
-  var r = 0;
-  return Promise.map(subscriptions, function(subscription) {
-    return sendPush(subscription, msg)
-    .then(function(res) {
-      r++;
-      return res;
-    })
-    .catch(function(err) {
-      e++;
-      return Promise.reject(err);
-    });
-  })
-  .then(function() {
-    return { e: e, r: r };
-  })
-  .catch(function() {
-    return Promise.reject({ e: e, r: r });
-  });
-};
+var webpush = require('./webpush');
 
 
 var formatError = function(msg, err) {
@@ -123,7 +79,7 @@ server.route({
     };
     var opt = { w: 1 };
     // before saving into the db, send one notification to check the endpoint exists or the keys are ok
-    checkSubscribtion({ endpoint: endpoint, keys: keys })
+    webpush.checkSubscribtion({ endpoint: endpoint, keys: keys })
     .then(function() {
       db.collection.insert(data, opt)
       .then(function(doc) {
@@ -210,7 +166,7 @@ server.route({
     db.collection.find(query, projection).toArray()
     .then(function(doc) {
       if (doc.length) {
-        return sendPushes(doc, msg)
+        return webpush.sendPushes(doc, msg)
         .then(function(res) {
           return reply({ status: 1, failed: res.e, succeeded: res.r });
         })
