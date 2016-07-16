@@ -4,20 +4,7 @@ var Promise = require('bluebird');
 var config = require('./config');
 var db = require('./db');
 var webpush = require('./webpush');
-
-
-var formatError = function(msg, err) {
-  var obj = {
-    status: 0,
-    error: msg
-  };
-
-  if (err) {
-    obj.details = err.message || (err.statusCode + ' ' + err.statusMessage);
-  }
-
-  return obj;
-};
+var utils = require('./utils');
 
 
 //=== Server
@@ -26,7 +13,7 @@ var server = new Hapi.Server();
 server.connection({
   port: config.port,
   host: config.host,
-  routes: { cors: { origin: [config.allowedOrigins] } }
+  routes: { cors: { origin: config.allowedOrigins } }
 });
 
 var pre = function(request, reply) {
@@ -55,7 +42,7 @@ server.route({
       reply(doc);
     })
     .catch(function(err) {  
-      return reply(formatError('Internal MongoDB error', err)).code(500);
+      return reply(utils.formatError('Internal MongoDB error', err)).code(500);
     });
   },
   config: {
@@ -88,14 +75,14 @@ server.route({
           var _id = doc.ops[0]._id;
           return reply({ status: 1, id: _id });
         }
-        return reply(formatError('Error inserting the data')).code(500);
+        return reply(utils.formatError('Error inserting the data')).code(500);
       })
       .catch(function(err) {
-        return reply(formatError('Internal MongoDB error', err)).code(500);
+        return reply(utils.formatError('Internal MongoDB error', err)).code(500);
       });
     })
     .catch(function(err) {
-      return reply(formatError('Error registering subscription to GCM', err)).code(400);
+      return reply(utils.formatError('Error registering subscription to GCM', err)).code(400);
     });
   },
   config: {
@@ -123,17 +110,17 @@ server.route({
     try {
       _id = new ObjectID(id);
     } catch(e) {
-      return reply(formatError('Not Found')).code(404);
+      return reply(utils.formatError('Not Found')).code(404);
     }
     db.collection.remove({ '_id' : _id })
     .then(function(doc) {
       if (doc.result.ok === 1) {
         return reply({ status: 1});
       }
-      return reply(formatError('Error deleting the data')).code(500);
+      return reply(utils.formatError('Error deleting the data')).code(500);
     })
     .catch(function(err) {
-      return reply(formatError('Internal MongoDB error', err)).code(500);
+      return reply(utils.formatError('Internal MongoDB error', err)).code(500);
     });
   },
   config: {
@@ -180,7 +167,7 @@ server.route({
       }
     })
     .catch(function(err) {
-      return reply(formatError('Internal MongoDB error', err)).code(500);
+      return reply(utils.formatError('Internal MongoDB error', err)).code(500);
     });
   },
   config: {
