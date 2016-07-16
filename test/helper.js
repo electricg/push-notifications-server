@@ -39,7 +39,7 @@ before(function(done) {
     mongoose.connect(config.mongodbUrl, {
       promiseLibrary: bluebird
     }, function(err) {
-      server = require('../server');
+      server = require('../index');
       done(err);
     });
   })

@@ -2,11 +2,8 @@ var Hapi = require('hapi');
 var joi = require('joi');
 var Promise = require('bluebird');
 var webpush = require('web-push-encryption');
-var config = require('./src/config');
-var db = require('./src/db');
-
-
-db.connect();
+var config = require('./config');
+var db = require('./db');
 
 
 //=== Web Push
@@ -74,14 +71,6 @@ server.connection({
   port: config.port,
   host: config.host,
   routes: { cors: { origin: [config.allowedOrigins] } }
-});
-
-server.start(function(err) {
-  if (err) {
-    console.error(err);
-    throw err;
-  }
-  console.log('Server started at: ', server.info.uri);
 });
 
 var pre = function(request, reply) {
@@ -248,3 +237,17 @@ server.route({
     }
   }
 });
+
+
+module.exports.start = function() {
+  return new Promise(function(resolve, reject) {
+    server.start(function(err) {
+      if (err) {
+        console.log('server error', err);
+        return reject(err);
+      }
+      console.log('Server started at: ', server.info.uri);
+      return resolve();
+    });
+  });
+};

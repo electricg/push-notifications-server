@@ -17,9 +17,7 @@ var connect = function(cb) {
     if (err) {
       console.log('error', err);
     }
-    if (cb) {
-      cb();
-    }
+    cb();
   });
 };
 module.exports.connect = connect;

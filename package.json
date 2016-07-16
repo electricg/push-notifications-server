@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "description": "Push notifications server",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "start": "node .",
     "lint": "./node_modules/.bin/jshint . --exclude-path .gitignore --reporter=./node_modules/jshint-full-path/index.js",
