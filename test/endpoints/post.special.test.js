@@ -290,7 +290,8 @@ describe(method + ' ' + endpoint, function() {
   it('should succeed with all clients succeeding', function(done) {
     var payload = {
       key: helper.config.privateAuth,
-      msg: 'xxx'
+      msg: 'xxx',
+      title: 'yyy'
     };
 
     var options = {
@@ -338,7 +339,8 @@ describe(method + ' ' + endpoint, function() {
   it('should succeed with at least one client failing', function(done) {
     var payload = {
       key: helper.config.privateAuth,
-      msg: 'xxx'
+      msg: 'xxx',
+      title: 'yyy'
     };
 
     var options = {
