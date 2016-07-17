@@ -10,4 +10,5 @@ module.exports = {
   gcmAuth: process.env.GCM_AUTH || 'xxx', // GCM API key
   collectionName: process.env.COLLECTION_NAME || 'clients',
   welcomeMsg: process.env.WELCOME_MSG || 'You have successfully subscribed to ELECTRIC_G notifications!',
+  publicList: process.env.PUBLIC_LIST || true,
 };

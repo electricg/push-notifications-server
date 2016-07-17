@@ -32,18 +32,23 @@ server.route({
 });
 
 // Get all subscriptions
-// I personally don't want it enabled
 server.route({
   method: 'GET',
   path: '/clients',
   handler: function(request, reply) {
-    db.collection.find().toArray()
-    .then(function(doc) {
-      reply(doc);
-    })
-    .catch(function(err) {  
-      return reply(utils.formatError('Internal MongoDB error', err)).code(500);
-    });
+    // TODO write tests
+    if (config.publicList) {
+      db.collection.find().toArray()
+      .then(function(doc) {
+        reply(doc);
+      })
+      .catch(function(err) {  
+        return reply(utils.formatError('Internal MongoDB error', err)).code(500);
+      });
+    }
+    else {
+      return reply().code(401);
+    }
   },
   config: {
     pre: [{ method: pre }]
