@@ -3,8 +3,8 @@ var joi = require('joi');
 var Promise = require('bluebird');
 var config = require('./config');
 var db = require('./db');
-var webpush = require('./webpush');
 var utils = require('./utils');
+var webpush = require('./webpush');
 
 
 //=== Server
@@ -186,7 +186,7 @@ module.exports.start = function() {
   return new Promise(function(resolve, reject) {
     server.start(function(err) {
       if (err) {
-        console.log('server error', err);
+        console.log('Server error', err);
         return reject(err);
       }
       console.log('Server started at: ', server.info.uri);

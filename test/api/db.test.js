@@ -56,7 +56,7 @@ describe('MongoDB', function() {
     var spy = sinon.spy(console, 'log');
 
     helper.db.db.close(function() {
-      spy.withArgs('error', 'Lost MongoDB connection').calledOnce.should.equal(true);
+      spy.withArgs('Error', 'Lost MongoDB connection').calledOnce.should.equal(true);
 
       helper.db.reconnect(function() {
         spy.withArgs('Connection established to MongoDB').calledOnce.should.equal(true);
@@ -71,7 +71,7 @@ describe('MongoDB', function() {
     var spy = sinon.spy(console, 'log');
 
     helper.db.connect(function() {
-      spy.withArgs('error').calledOnce.should.equal(true);
+      spy.withArgs('Error').calledOnce.should.equal(true);
       done();
     });
   });

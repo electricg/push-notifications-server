@@ -15,7 +15,7 @@ var connect = function(cb) {
     }
   }, function(err) {
     if (err) {
-      console.log('error', err);
+      console.log('Error', err);
     }
     cb();
   });
@@ -38,10 +38,10 @@ db.on('connected', function() {
   console.log('Connection established to MongoDB');
 });
 db.on('error', function(err) {
-  console.log('error', err.name + ': ' + err.message);
+  console.log('Error', err.name + ': ' + err.message);
 });
 db.on('disconnected', function() {
-  console.log('error', 'Lost MongoDB connection');
+  console.log('Error', 'Lost MongoDB connection');
 });
 db.on('reconnected', function() {
   console.log('Reconnected to MongoDB');
