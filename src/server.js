@@ -149,6 +149,7 @@ server.route({
     }
 
     var msg = request.payload.msg;
+    var title = request.payload.title;
     var query = {};
     var projection = {
       _id: false,
@@ -158,7 +159,7 @@ server.route({
     db.collection.find(query, projection).toArray()
     .then(function(doc) {
       if (doc.length) {
-        return webpush.sendPushes(doc, msg)
+        return webpush.sendPushes(doc, msg, title)
         .then(function(res) {
           return reply({ status: 1, failed: res.e, succeeded: res.r });
         })
@@ -180,7 +181,8 @@ server.route({
     validate: {
       payload: {
         key: joi.string().required(),
-        msg: joi.string().required()
+        msg: joi.string().required(),
+        title: joi.string()
       }
     }
   }
