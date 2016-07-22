@@ -36,7 +36,7 @@ module.exports.gcmUrl = /(gcm-http.googleapis\.com)|(android\.googleapis\.com)/;
 before(function(done) {
   mockgoose(mongoose)
   .then(function() {
-    mongoose.connect(config.mongodbUrl, {
+    mongoose.connect(config.get('mongodbUrl'), {
       promiseLibrary: bluebird
     }, function(err) {
       server = require('../index');

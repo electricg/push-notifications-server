@@ -3,7 +3,7 @@ var bluebird = require('bluebird');
 var config = require('./config');
 
 var connect = function(cb) {
-  Mongoose.connect(config.mongodbUrl, {
+  Mongoose.connect(config.get('mongodbUrl'), {
     promiseLibrary: bluebird,
     server: {
       'auto_reconnect': true,
@@ -24,7 +24,7 @@ module.exports.connect = connect;
 var db = Mongoose.connection;
 
 module.exports.db = db;
-module.exports.collection = db.collection(config.collectionName);
+module.exports.collection = db.collection(config.get('collectionName'));
 module.exports.Mongoose = Mongoose;
 
 module.exports.reconnect = function(cb) {

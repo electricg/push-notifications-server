@@ -9,7 +9,7 @@ var helper = require('../helper');
 
 var endpoint = '/clients';
 var method = 'POST';
-var baseUrl = 'http://' + helper.config.host + ':' + helper.config.port;
+var baseUrl = 'http://' + helper.config.get('host') + ':' + helper.config.get('port');
 
 describe(method + ' ' + endpoint, function() {
   it('should fail with an empty body', function(done) {

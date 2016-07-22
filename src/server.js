@@ -11,9 +11,9 @@ var webpush = require('./webpush');
 var server = new Hapi.Server();
 
 server.connection({
-  port: config.port,
-  host: config.host,
-  routes: { cors: { origin: config.allowedOrigins } }
+  port: config.get('port'),
+  host: config.get('host'),
+  routes: { cors: { origin: config.get('allowedOrigins') } }
 });
 
 var pre = function(request, reply) {
@@ -37,7 +37,7 @@ server.route({
   path: '/clients',
   handler: function(request, reply) {
     // TODO write tests
-    if (config.publicList) {
+    if (config.get('publicList')) {
       db.collection.find().toArray()
       .then(function(doc) {
         reply(doc);
@@ -141,10 +141,10 @@ server.route({
 // Send message to all subscriptions
 server.route({
   method: 'POST',
-  path: '/' + config.privatePath,
+  path: '/' + config.get('privatePath'),
   handler: function(request, reply) {
     var key = request.payload.key;
-    if (key !== config.privateAuth) {
+    if (key !== config.get('privateAuth')) {
       return reply().code(401);
     }
 

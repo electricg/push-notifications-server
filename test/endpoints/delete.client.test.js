@@ -7,7 +7,7 @@ var helper = require('../helper');
 
 var endpoint = '/client';
 var method = 'DELETE';
-var baseUrl = 'http://' + helper.config.host + ':' + helper.config.port;
+var baseUrl = 'http://' + helper.config.get('host') + ':' + helper.config.get('port');
 
 describe(method + ' ' + endpoint, function() {
   it('should fail with no id', function(done) {

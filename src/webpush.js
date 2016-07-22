@@ -3,7 +3,7 @@ var webpush = require('web-push-encryption');
 var config = require('./config');
 
 
-webpush.setGCMAPIKey(config.gcmAuth);
+webpush.setGCMAPIKey(config.get('gcmAuth'));
 
 // Send push with message to a single subscription.
 // Try and catch is for when subscription is invalid
@@ -23,7 +23,7 @@ var sendPush = function(subscription, msg, title) {
 
 // Send push with welcome message when subscribtion data arrives
 module.exports.checkSubscribtion = function(subscription) {
-  return sendPush(subscription, config.welcomeMsg);
+  return sendPush(subscription, config.get('welcomeMsg'));
 };
 
 // Send push with message to all the subscriptions.

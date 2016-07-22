@@ -5,7 +5,7 @@ var helper = require('../helper');
 
 var endpoint = '/info';
 var method = 'GET';
-var baseUrl = 'http://' + helper.config.host + ':' + helper.config.port;
+var baseUrl = 'http://' + helper.config.get('host') + ':' + helper.config.get('port');
 
 describe(method + ' ' + endpoint, function() {
   it('should succeed to return server informations', function(done) {

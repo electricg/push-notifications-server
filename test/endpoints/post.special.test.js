@@ -7,9 +7,9 @@ var sinon = require('sinon');
 var _ = require('lodash');
 var helper = require('../helper');
 
-var endpoint = '/' + helper.config.privatePath;
+var endpoint = '/' + helper.config.get('privatePath');
 var method = 'POST';
-var baseUrl = 'http://' + helper.config.host + ':' + helper.config.port;
+var baseUrl = 'http://' + helper.config.get('host') + ':' + helper.config.get('port');
 
 describe(method + ' ' + endpoint, function() {
   it('should fail with an empty body', function(done) {
@@ -192,7 +192,7 @@ describe(method + ' ' + endpoint, function() {
 
   it('should fail and return 401 because of not valid key', function(done) {
     var payload = {
-      key: helper.config.privateAuth + 'x',
+      key: helper.config.get('privateAuth') + 'x',
       msg: 'xxx'
     };
 
@@ -219,7 +219,7 @@ describe(method + ' ' + endpoint, function() {
 
   it('should fail and return 500 because of a problem with the db', function(done) {
     var payload = {
-      key: helper.config.privateAuth,
+      key: helper.config.get('privateAuth'),
       msg: 'xxx'
     };
 
@@ -259,7 +259,7 @@ describe(method + ' ' + endpoint, function() {
 
   it('should succeed with no clients registered', function(done) {
     var payload = {
-      key: helper.config.privateAuth,
+      key: helper.config.get('privateAuth'),
       msg: 'xxx'
     };
 
@@ -289,7 +289,7 @@ describe(method + ' ' + endpoint, function() {
 
   it('should succeed with all clients succeeding', function(done) {
     var payload = {
-      key: helper.config.privateAuth,
+      key: helper.config.get('privateAuth'),
       msg: 'xxx',
       title: 'yyy'
     };
@@ -338,7 +338,7 @@ describe(method + ' ' + endpoint, function() {
 
   it('should succeed with at least one client failing', function(done) {
     var payload = {
-      key: helper.config.privateAuth,
+      key: helper.config.get('privateAuth'),
       msg: 'xxx',
       title: 'yyy'
     };
