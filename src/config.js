@@ -12,6 +12,7 @@ var DEFAULT = {
   COLLECTION_NAME: 'clients',
   WELCOME_MSG: 'You have successfully subscribed to ELECTRIC_G notifications!',
   PUBLIC_LIST: false,
+  AUTH_HEADER: 'PUSH-NOTIFICATION ',
 };
 
 nconf
@@ -30,9 +31,10 @@ nconf.set('gcmAuth', nconf.get('GCM_AUTH'));
 nconf.set('collectionName', nconf.get('COLLECTION_NAME'));
 nconf.set('welcomeMsg', nconf.get('WELCOME_MSG'));
 nconf.set('publicList', nconf.get('PUBLIC_LIST') === 'true' || nconf.get('PUBLIC_LIST') === true);
+nconf.set('authHeader', nconf.get('AUTH_HEADER'));
 
 module.exports.get = function(param) {
-  var arr = ['port', 'host', 'mongodbUrl', 'allowedOrigins', 'privateAuth', 'privatePath', 'gcmAuth', 'collectionName', 'welcomeMsg', 'publicList'];
+  var arr = ['port', 'host', 'mongodbUrl', 'allowedOrigins', 'privateAuth', 'privatePath', 'gcmAuth', 'collectionName', 'welcomeMsg', 'publicList', 'authHeader'];
   if (arr.indexOf(param) !== -1) {
     return nconf.get(param);
   }

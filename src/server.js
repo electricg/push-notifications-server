@@ -36,7 +36,6 @@ server.route({
   method: 'GET',
   path: '/clients',
   handler: function(request, reply) {
-    // TODO write tests
     if (config.get('publicList')) {
       db.collection.find().toArray()
       .then(function(doc) {
@@ -117,12 +116,30 @@ server.route({
     } catch(e) {
       return reply(utils.formatError('Not Found')).code(404);
     }
-    db.collection.remove({ '_id' : _id })
+    
+    var auth = request.headers.authorization;
+    if (!auth) {
+      return reply().code(401);
+    }
+    if (auth.indexOf(config.get('authHeader')) !== 0) {
+      return reply().code(401);
+    }
+    auth = auth.replace(config.get('authHeader'), '');
+    var authArr = auth.split(',');
+    var authObj = {};
+    authArr.forEach(function(item) {
+      var sep = item.indexOf('=');
+      var p = item.substring(0, sep).trim();
+      var v = item.substring(sep + 1).trim();
+      authObj[p] = v;
+    });
+    
+    db.collection.remove({ '_id' : _id, 'endpoint': authObj.endpoint, 'keys.p256dh': authObj.p256dh, 'keys.auth': authObj.auth }, { justOne: true })
     .then(function(doc) {
-      if (doc.result.ok === 1) {
+      if (doc.result.ok === 1 && doc.result.n === 1) {
         return reply({ status: 1});
       }
-      return reply(utils.formatError('Error deleting the data')).code(500);
+      return reply(utils.formatError('Not Found')).code(404);
     })
     .catch(function(err) {
       return reply(utils.formatError('Internal MongoDB error', err)).code(500);
