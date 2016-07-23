@@ -17,7 +17,7 @@ var DEFAULT = {
 
 nconf
   .env()
-  .file('../config.json')
+  .file(__dirname + '/../config.json')
   .defaults(DEFAULT)
 ;
 
