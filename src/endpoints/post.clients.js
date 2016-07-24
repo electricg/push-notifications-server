@@ -7,13 +7,17 @@ var webpush = require('../webpush');
 module.exports.handler = function(request, reply) {
   var endpoint = request.payload.endpoint;
   var keys = request.payload.keys;
-  // var ip = request.info.remoteAddress + ':' + request.info.remotePort;
-  console.log(request.info);
+  var ip = request.headers['x-forwarded-for'] || request.info.remoteAddress;
+  var userAgent = request.headers['user-agent'];
+  console.log(ip);
+  console.log(userAgent);
   console.log(request.headers);
   var data = {
     endpoint: endpoint,
     keys: keys,
-    // ip: ip,
+    ip: ip,
+    userAgent: userAgent,
+    status: true,
     date: new Date()
   };
   var opt = { w: 1 };

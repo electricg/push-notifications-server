@@ -5,7 +5,8 @@ var db = require('../db');
 var utils = require('../utils');
 
 module.exports.handler = function(request, reply) {
-  console.log(request.info);
+  var ip = request.headers['x-forwarded-for'] || request.info.remoteAddress;
+  console.log(ip);
   console.log(request.headers);
   var ObjectID = db.Mongoose.Types.ObjectId;
   var id = request.params.id;
