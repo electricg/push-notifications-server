@@ -9,7 +9,7 @@ module.exports.handler = function(request, reply) {
   var keys = request.payload.keys;
   // var ip = request.info.remoteAddress + ':' + request.info.remotePort;
   console.log(request.info);
-  console.log(request.headers['X-Forwarded-For']);
+  console.log(request.headers);
   var data = {
     endpoint: endpoint,
     keys: keys,

@@ -6,7 +6,7 @@ var utils = require('../utils');
 
 module.exports.handler = function(request, reply) {
   console.log(request.info);
-  console.log(request.headers['X-Forwarded-For']);
+  console.log(request.headers);
   var ObjectID = db.Mongoose.Types.ObjectId;
   var id = request.params.id;
   var _id;
