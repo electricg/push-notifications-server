@@ -40,11 +40,13 @@ module.exports.handler = function(request, reply) {
     'keys.auth': authObj.auth
   };
   var update = {
-    status: false,
-    unsubscribed: {
-      date: new Date(),
-      ip: ip,
-      userAgent: userAgent
+    '$set': {
+      status: false,
+      unsubscribed: {
+        date: new Date(),
+        ip: ip,
+        userAgent: userAgent
+      }
     }
   };
   var options = {
