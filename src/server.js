@@ -3,8 +3,6 @@ var Promise = require('bluebird');
 var config = require('./config');
 var db = require('./db');
 
-
-//=== Server
 var server = new Hapi.Server();
 
 server.connection({
@@ -12,11 +10,6 @@ server.connection({
   host: config.get('host'),
   routes: { cors: { origin: config.get('allowedOrigins') } }
 });
-
-var pre = function(request, reply) {
-  db.reconnect();
-  return reply();
-};
 
 var routes = [
   { 'method':    'GET', 'path': '/info',        'module': 'get.info'      },
@@ -34,7 +27,12 @@ routes.forEach(function(route) {
     path: route.path,
     handler: mod.handler,
     config: {
-      pre: [{ method: pre }]
+      pre: [{
+        method: function(request, reply) {
+          db.reconnect();
+          return reply();
+        }
+      }]
     }
   };
   if (mod.validate) {
