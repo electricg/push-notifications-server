@@ -2,6 +2,7 @@
 /* exported helper */
 var request = require('request');
 var helper = require('../helper');
+var package = require('../../package.json');
 
 var endpoint = '/info';
 var method = 'GET';
@@ -25,7 +26,7 @@ describe(method + ' ' + endpoint, function() {
         response.statusCode.should.equal(statusCode);
         var body = response.body;
         body.status.should.equal(1);
-        body.version.should.equal('1.0.0');
+        body.version.should.equal(package.version);
         done();
       }
     });
