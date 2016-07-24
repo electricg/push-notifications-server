@@ -23,6 +23,10 @@ describe(method + ' ' + endpoint, function() {
       }
       else {
         response.statusCode.should.equal(statusCode);
+        var body = response.body;
+        var fs = require('fs');
+        var specialHtml = fs.readFileSync('public/special.html', 'utf8');
+        body.should.equal(specialHtml);
         done();
       }
     });
