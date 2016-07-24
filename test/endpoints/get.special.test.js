@@ -5,13 +5,12 @@ var helper = require('../helper');
 
 var endpoint = '/' + helper.config.get('privatePath');
 var method = 'GET';
-var baseUrl = 'http://' + helper.config.get('host') + ':' + helper.config.get('port');
 
 describe(method + ' ' + endpoint, function() {
   it('should succeed to return the admin page', function(done) {
     var options = {
       method: method,
-      baseUrl: baseUrl,
+      baseUrl: helper.baseUrl,
       url: endpoint,
       json: true
     };

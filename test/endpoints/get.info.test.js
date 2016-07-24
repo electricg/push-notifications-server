@@ -6,13 +6,12 @@ var package = require('../../package.json');
 
 var endpoint = '/info';
 var method = 'GET';
-var baseUrl = 'http://' + helper.config.get('host') + ':' + helper.config.get('port');
 
 describe(method + ' ' + endpoint, function() {
   it('should succeed to return server informations', function(done) {
     var options = {
       method: method,
-      baseUrl: baseUrl,
+      baseUrl: helper.baseUrl,
       url: endpoint,
       json: true
     };

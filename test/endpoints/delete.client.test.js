@@ -7,13 +7,12 @@ var helper = require('../helper');
 
 var endpoint = '/client';
 var method = 'DELETE';
-var baseUrl = 'http://' + helper.config.get('host') + ':' + helper.config.get('port');
 
 describe(method + ' ' + endpoint, function() {
   it('should fail with no id', function(done) {
     var options = {
       method: method,
-      baseUrl: baseUrl,
+      baseUrl: helper.baseUrl,
       url: endpoint,
       json: true
     };
@@ -37,7 +36,7 @@ describe(method + ' ' + endpoint, function() {
     var id = 'xxx';
     var options = {
       method: method,
-      baseUrl: baseUrl,
+      baseUrl: helper.baseUrl,
       url: endpoint + '/' + id,
       json: true
     };
@@ -61,7 +60,7 @@ describe(method + ' ' + endpoint, function() {
     var id = '57891df47bc6aff129e7fe3b';
     var options = {
       method: method,
-      baseUrl: baseUrl,
+      baseUrl: helper.baseUrl,
       url: endpoint + '/' + id,
       json: true
     };
@@ -84,7 +83,7 @@ describe(method + ' ' + endpoint, function() {
     var headers = { 'Authorization': 'xxx' };
     var options = {
       method: method,
-      baseUrl: baseUrl,
+      baseUrl: helper.baseUrl,
       url: endpoint + '/' + id,
       json: true,
       headers: headers
@@ -108,7 +107,7 @@ describe(method + ' ' + endpoint, function() {
     var headers = { 'Authorization': helper.config.get('authHeader') };
     var options = {
       method: method,
-      baseUrl: baseUrl,
+      baseUrl: helper.baseUrl,
       url: endpoint + '/' + id,
       json: true,
       headers: headers
@@ -132,7 +131,7 @@ describe(method + ' ' + endpoint, function() {
   it('should fail because the Authorization header does not match the id in the db', function(done) {
     var options = {
       method: method,
-      baseUrl: baseUrl,
+      baseUrl: helper.baseUrl,
       url: endpoint,
       json: true
     };
@@ -173,7 +172,7 @@ describe(method + ' ' + endpoint, function() {
     var headers = { 'Authorization': helper.config.get('authHeader') };
     var options = {
       method: method,
-      baseUrl: baseUrl,
+      baseUrl: helper.baseUrl,
       url: endpoint + '/' + id,
       json: true,
       headers: headers
@@ -206,7 +205,7 @@ describe(method + ' ' + endpoint, function() {
     var headers = { 'Authorization': helper.config.get('authHeader') };
     var options = {
       method: method,
-      baseUrl: baseUrl,
+      baseUrl: helper.baseUrl,
       url: endpoint + '/' + id,
       json: true,
       headers: headers
@@ -240,7 +239,7 @@ describe(method + ' ' + endpoint, function() {
   it('should succeed to delete the client', function(done) {
     var options = {
       method: method,
-      baseUrl: baseUrl,
+      baseUrl: helper.baseUrl,
       url: endpoint,
       json: true
     };

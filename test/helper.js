@@ -12,6 +12,8 @@ var server;
 module.exports.config = config;
 module.exports.db = db;
 
+module.exports.baseUrl = 'http://' + config.get('host') + ':' + config.get('port');
+
 module.exports.goodClients = [
   {
     'endpoint' : 'https://android.googleapis.com/gcm/send/dcqAlHtjC84:APA91bHj7Qp1d-ZPy83313ohQaE_CSeSvczh-3Qfj1dyzkAV_K3FTSfqXH2LmS_AF9uv1TmcAneMH2MHSeqRHxo9QfoblfYODySeV_2L1kV0pEhEBbBHhXokOzVAZyvGGpT0K07rAPqc',

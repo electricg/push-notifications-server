@@ -7,7 +7,6 @@ var helper = require('../helper');
 
 var endpoint = '/clients';
 var method = 'GET';
-var baseUrl = 'http://' + helper.config.get('host') + ':' + helper.config.get('port');
 
 
 describe(method + ' ' + endpoint + ' enabled', function() {
@@ -36,7 +35,7 @@ describe(method + ' ' + endpoint + ' enabled', function() {
 
     var options = {
       method: method,
-      baseUrl: baseUrl,
+      baseUrl: helper.baseUrl,
       url: endpoint,
       json: true
     };
@@ -62,7 +61,7 @@ describe(method + ' ' + endpoint + ' enabled', function() {
   it('should succeed to return an array of clients', function(done) {
     var options = {
       method: method,
-      baseUrl: baseUrl,
+      baseUrl: helper.baseUrl,
       url: endpoint,
       json: true
     };
@@ -95,7 +94,7 @@ describe(method + ' ' + endpoint + ' enabled', function() {
   it('should succeed to return an empty array of clients', function(done) {
     var options = {
       method: method,
-      baseUrl: baseUrl,
+      baseUrl: helper.baseUrl,
       url: endpoint,
       json: true
     };
@@ -135,7 +134,7 @@ describe(method + ' ' + endpoint + ' disabled', function() {
   it('should fail and return 401', function(done) {
     var options = {
       method: method,
-      baseUrl: baseUrl,
+      baseUrl: helper.baseUrl,
       url: endpoint,
       json: true
     };
