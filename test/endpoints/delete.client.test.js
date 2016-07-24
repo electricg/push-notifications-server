@@ -179,7 +179,7 @@ describe(method + ' ' + endpoint, function() {
     };
     var statusCode = 500;
 
-    var revert = sinon.stub(helper.db.collection, 'remove', function() {
+    var revert = sinon.stub(helper.db.collection, 'update', function() {
       return Promise.reject(new Error('fake db error'));
     });
 
@@ -212,7 +212,7 @@ describe(method + ' ' + endpoint, function() {
     };
     var statusCode = 404;
 
-    var revert = sinon.stub(helper.db.collection, 'remove', function() {
+    var revert = sinon.stub(helper.db.collection, 'update', function() {
       return Promise.resolve({
         result: {
           ok: 0

@@ -9,16 +9,15 @@ module.exports.handler = function(request, reply) {
   var keys = request.payload.keys;
   var ip = request.headers['x-forwarded-for'] || request.info.remoteAddress;
   var userAgent = request.headers['user-agent'];
-  console.log(ip);
-  console.log(userAgent);
-  console.log(request.headers);
   var data = {
     endpoint: endpoint,
     keys: keys,
-    ip: ip,
-    userAgent: userAgent,
-    status: true,
-    date: new Date()
+    subscribed: {
+      date: new Date(),
+      ip: ip,
+      userAgent: userAgent
+    },
+    status: true
   };
   var opt = { w: 1 };
   // before saving into the db, send one notification to check the endpoint exists or the keys are ok
@@ -26,7 +25,6 @@ module.exports.handler = function(request, reply) {
   .then(function() {
     db.collection.insert(data, opt)
     .then(function(doc) {
-      // console.log(doc);
       if (doc.result.ok === 1 && doc.result.n === 1) {
         var _id = doc.ops[0]._id;
         return reply({ status: 1, id: _id });

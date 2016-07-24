@@ -305,8 +305,58 @@ describe(method + ' ' + endpoint, function() {
     var data = _.cloneDeep(helper.goodClients);
     data.push(_.cloneDeep(helper.goodClients[0]));
     data.forEach(function(item) {
-      item.date = new Date();
+      item.status = true;
     });
+
+    nock(helper.gcmUrl)
+      .filteringPath(function() {
+        return '/xxx';
+      })
+      .post('/xxx').times(data.length)
+        .reply(201);
+
+    helper.db.collection.insert(data)
+    .then(function() {
+      request(options, function(err, response) {
+        if (err) {
+          done(err);
+        }
+        else {
+          var body = response.body;
+          response.statusCode.should.equal(statusCode);
+          body.status.should.equal(1);
+          body.succeeded.should.equal(2);
+          body.failed.should.equal(0);
+          done();
+        }
+      });
+    })
+    .catch(done);
+  });
+
+
+  it('should succeed with active clients succeeding', function(done) {
+    var payload = {
+      key: helper.config.get('privateAuth'),
+      msg: 'xxx',
+      title: 'yyy'
+    };
+
+    var options = {
+      method: method,
+      baseUrl: helper.baseUrl,
+      url: endpoint,
+      json: true,
+      body: payload
+    };
+    var statusCode = 200;
+
+    var data = _.cloneDeep(helper.goodClients);
+    data.push(_.cloneDeep(helper.goodClients[0]));
+    data.push(_.cloneDeep(helper.goodClients[0]));
+    data[0].status = true;
+    data[1].status = true;
+    data[2].status = false;
 
     nock(helper.gcmUrl)
       .filteringPath(function() {
@@ -357,7 +407,7 @@ describe(method + ' ' + endpoint, function() {
     data[1].endpoint += 'x';
     data[2].endpoint += 'x';
     data.forEach(function(item) {
-      item.date = new Date();
+      item.status = true;
     });
     var goodP = helper.goodClients[0].endpoint.split('/').pop();
 

@@ -5,9 +5,6 @@ var db = require('../db');
 var utils = require('../utils');
 
 module.exports.handler = function(request, reply) {
-  var ip = request.headers['x-forwarded-for'] || request.info.remoteAddress;
-  console.log(ip);
-  console.log(request.headers);
   var ObjectID = db.Mongoose.Types.ObjectId;
   var id = request.params.id;
   var _id;
@@ -33,8 +30,29 @@ module.exports.handler = function(request, reply) {
     var v = item.substring(sep + 1).trim();
     authObj[p] = v;
   });
+
+  var ip = request.headers['x-forwarded-for'] || request.info.remoteAddress;
+  var userAgent = request.headers['user-agent'];
+  var query = {
+    '_id' : _id,
+    'endpoint': authObj.endpoint,
+    'keys.p256dh': authObj.p256dh,
+    'keys.auth': authObj.auth
+  };
+  var update = {
+    status: false,
+    unsubscribed: {
+      date: new Date(),
+      ip: ip,
+      userAgent: userAgent
+    }
+  };
+  var options = {
+    upsert: false,
+    multi: false
+  };
   
-  db.collection.remove({ '_id' : _id, 'endpoint': authObj.endpoint, 'keys.p256dh': authObj.p256dh, 'keys.auth': authObj.auth }, { justOne: true })
+  db.collection.update(query, update, options)
   .then(function(doc) {
     if (doc.result.ok === 1 && doc.result.n === 1) {
       return reply({ status: 1});

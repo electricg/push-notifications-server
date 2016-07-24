@@ -2,7 +2,5 @@
 var package = require('../../package.json');
 
 module.exports.handler = function(request, reply) {
-  console.log(request.info);
-  console.log('info');
   reply({ status: 1, version: package.version });
 };
