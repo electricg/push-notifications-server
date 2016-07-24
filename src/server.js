@@ -1,3 +1,4 @@
+var fs = require('fs');
 var Hapi = require('hapi');
 var joi = require('joi');
 var Promise = require('bluebird');
@@ -28,6 +29,9 @@ server.route({
   handler: function(request, reply) {
     console.log('info');
     reply({ status: 1, version: '1.0.0' });
+  },
+  config: {
+    pre: [{ method: pre }]
   }
 });
 
@@ -152,6 +156,19 @@ server.route({
         id: joi.string().required() // TODO check length and/or regex
       }
     }
+  }
+});
+
+// Show page to send message to all subscriptions
+var specialHtml = fs.readFileSync('public/special.html', 'utf8');
+server.route({
+  method: 'GET',
+  path: '/' + config.get('privatePath'),
+  handler: function(request, reply) {
+    return reply(specialHtml);
+  },
+  config: {
+    pre: [{ method: pre }]
   }
 });
 
