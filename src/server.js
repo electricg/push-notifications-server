@@ -1,11 +1,7 @@
-var fs = require('fs');
 var Hapi = require('hapi');
-var joi = require('joi');
 var Promise = require('bluebird');
 var config = require('./config');
 var db = require('./db');
-var utils = require('./utils');
-var webpush = require('./webpush');
 
 
 //=== Server
@@ -22,206 +18,30 @@ var pre = function(request, reply) {
   return reply();
 };
 
-// Static endpoint for checking server status and debugging
-server.route({
-  method: 'GET',
-  path: '/info',
-  handler: function(request, reply) {
-    console.log('info');
-    reply({ status: 1, version: '1.0.0' });
-  },
-  config: {
-    pre: [{ method: pre }]
+var routes = [
+  { 'method':    'GET', 'path': '/info',        'module': 'get.info'      },
+  { 'method':    'GET', 'path': '/clients',     'module': 'get.clients'   },
+  { 'method':   'POST', 'path': '/clients',     'module': 'post.clients'  },
+  { 'method': 'DELETE', 'path': '/client/{id}', 'module': 'delete.client' },
+  { 'method':    'GET', 'path': '/' + config.get('privatePath'), 'module': 'get.special'  },
+  { 'method':   'POST', 'path': '/' + config.get('privatePath'), 'module': 'post.special' },
+];
+
+routes.forEach(function(route) {
+  var mod = require('./endpoints/' + route.module);
+  var options = {
+    method: route.method,
+    path: route.path,
+    handler: mod.handler,
+    config: {
+      pre: [{ method: pre }]
+    }
+  };
+  if (mod.validate) {
+    options.config.validate = mod.validate;
   }
+  server.route(options);
 });
-
-// Get all subscriptions
-server.route({
-  method: 'GET',
-  path: '/clients',
-  handler: function(request, reply) {
-    if (config.get('publicList')) {
-      db.collection.find().toArray()
-      .then(function(doc) {
-        reply(doc);
-      })
-      .catch(function(err) {  
-        return reply(utils.formatError('Internal MongoDB error', err)).code(500);
-      });
-    }
-    else {
-      return reply().code(401);
-    }
-  },
-  config: {
-    pre: [{ method: pre }]
-  }
-});
-
-// Add subscription
-server.route({
-  method: 'POST',
-  path: '/clients',
-  handler: function(request, reply) {
-    var endpoint = request.payload.endpoint;
-    var keys = request.payload.keys;
-    // var ip = request.info.remoteAddress + ':' + request.info.remotePort;
-    var data = {
-      endpoint: endpoint,
-      keys: keys,
-      // ip: ip,
-      date: new Date()
-    };
-    var opt = { w: 1 };
-    // before saving into the db, send one notification to check the endpoint exists or the keys are ok
-    webpush.checkSubscribtion({ endpoint: endpoint, keys: keys })
-    .then(function() {
-      db.collection.insert(data, opt)
-      .then(function(doc) {
-        // console.log(doc);
-        if (doc.result.ok === 1 && doc.result.n === 1) {
-          var _id = doc.ops[0]._id;
-          return reply({ status: 1, id: _id });
-        }
-        return reply(utils.formatError('Error inserting the data')).code(500);
-      })
-      .catch(function(err) {
-        return reply(utils.formatError('Internal MongoDB error', err)).code(500);
-      });
-    })
-    .catch(function(err) {
-      return reply(utils.formatError('Error registering subscription to GCM', err)).code(400);
-    });
-  },
-  config: {
-    pre: [{ method: pre }],
-    validate: {
-      payload: {
-        endpoint: joi.string().required(), // TODO check length and/or regex
-        keys: {
-          auth: joi.string().required(), // TODO check length and/or regex
-          p256dh: joi.string().required() // TODO check length and/or regex
-        }
-      }
-    }
-  }
-});
-
-// Delete subscription
-server.route({
-  method: 'DELETE',
-  path: '/client/{id}',
-  handler: function(request, reply) {
-    var ObjectID = db.Mongoose.Types.ObjectId;
-    var id = request.params.id;
-    var _id;
-    try {
-      _id = new ObjectID(id);
-    } catch(e) {
-      return reply(utils.formatError('Not Found')).code(404);
-    }
-    
-    var auth = request.headers.authorization;
-    if (!auth) {
-      return reply().code(401);
-    }
-    if (auth.indexOf(config.get('authHeader')) !== 0) {
-      return reply().code(401);
-    }
-    auth = auth.replace(config.get('authHeader'), '');
-    var authArr = auth.split(',');
-    var authObj = {};
-    authArr.forEach(function(item) {
-      var sep = item.indexOf('=');
-      var p = item.substring(0, sep).trim();
-      var v = item.substring(sep + 1).trim();
-      authObj[p] = v;
-    });
-    
-    db.collection.remove({ '_id' : _id, 'endpoint': authObj.endpoint, 'keys.p256dh': authObj.p256dh, 'keys.auth': authObj.auth }, { justOne: true })
-    .then(function(doc) {
-      if (doc.result.ok === 1 && doc.result.n === 1) {
-        return reply({ status: 1});
-      }
-      return reply(utils.formatError('Not Found')).code(404);
-    })
-    .catch(function(err) {
-      return reply(utils.formatError('Internal MongoDB error', err)).code(500);
-    });
-  },
-  config: {
-    pre: [{ method: pre }],
-    validate: {
-      params: {
-        id: joi.string().required() // TODO check length and/or regex
-      }
-    }
-  }
-});
-
-// Show page to send message to all subscriptions
-var specialHtml = fs.readFileSync('public/special.html', 'utf8');
-server.route({
-  method: 'GET',
-  path: '/' + config.get('privatePath'),
-  handler: function(request, reply) {
-    return reply(specialHtml);
-  },
-  config: {
-    pre: [{ method: pre }]
-  }
-});
-
-// Send message to all subscriptions
-server.route({
-  method: 'POST',
-  path: '/' + config.get('privatePath'),
-  handler: function(request, reply) {
-    var key = request.payload.key;
-    if (key !== config.get('privateAuth')) {
-      return reply().code(401);
-    }
-
-    var msg = request.payload.msg;
-    var title = request.payload.title;
-    var query = {};
-    var projection = {
-      _id: false,
-      endpoint: true,
-      keys: true
-    };
-    db.collection.find(query, projection).toArray()
-    .then(function(doc) {
-      if (doc.length) {
-        return webpush.sendPushes(doc, msg, title)
-        .then(function(res) {
-          return reply({ status: 1, failed: res.e, succeeded: res.r });
-        })
-        .catch(function(err) {
-          // not returning an HTTP error status code because it could be a mixture of good and bad pushes 
-          return reply({ status: 0, failed: err.e, succeeded: err.r });
-        });
-      }
-      else {
-        return reply({ status: 0, message: 'No keys registered' });
-      }
-    })
-    .catch(function(err) {
-      return reply(utils.formatError('Internal MongoDB error', err)).code(500);
-    });
-  },
-  config: {
-    pre: [{ method: pre }],
-    validate: {
-      payload: {
-        key: joi.string().required(),
-        msg: joi.string().required(),
-        title: joi.string()
-      }
-    }
-  }
-});
-
 
 module.exports.start = function() {
   return new Promise(function(resolve, reject) {
