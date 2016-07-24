@@ -27,7 +27,7 @@ module.exports.checkSubscribtion = function(subscription) {
 };
 
 // Send push with message to all the subscriptions.
-// The calls are indipendent from each other, we just want to know how many succeeded and how many failed
+// The calls are indipendent from each other, we just want to know how many succeeded and how many failed, altough these numbers are not completely accurate
 module.exports.sendPushes = function(subscriptions, msg, title) {
   var e = 0;
   var r = 0;
@@ -38,6 +38,7 @@ module.exports.sendPushes = function(subscriptions, msg, title) {
       return res;
     })
     .catch(function(err) {
+      console.log('err', err);
       e++;
       return Promise.reject(err);
     });

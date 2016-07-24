@@ -6,6 +6,7 @@ var utils = require('../utils');
 var webpush = require('../webpush');
 
 module.exports.handler = function(request, reply) {
+  console.log(request.info);
   var key = request.payload.key;
   if (key !== config.get('privateAuth')) {
     return reply().code(401);

@@ -5,6 +5,7 @@ var db = require('../db');
 var utils = require('../utils');
 
 module.exports.handler = function(request, reply) {
+  console.log(request.info);
   var ObjectID = db.Mongoose.Types.ObjectId;
   var id = request.params.id;
   var _id;

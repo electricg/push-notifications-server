@@ -8,6 +8,7 @@ module.exports.handler = function(request, reply) {
   var endpoint = request.payload.endpoint;
   var keys = request.payload.keys;
   // var ip = request.info.remoteAddress + ':' + request.info.remotePort;
+  console.log(request.info);
   var data = {
     endpoint: endpoint,
     keys: keys,
