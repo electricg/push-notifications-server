@@ -151,6 +151,35 @@ describe(method + ' ' + endpoint, function() {
   });
 
 
+  it('should fail because of additional value in payload keys not expected', function(done) {
+    var payload = _.cloneDeep(helper.goodClients[0]);
+    payload.keys.fakeParam = 'xxx';
+
+    var options = {
+      method: method,
+      baseUrl: helper.baseUrl,
+      url: endpoint,
+      json: true,
+      body: payload
+    };
+    var statusCode = 400;
+
+    request(options, function(err, response) {
+      if (err) {
+        done(err);
+      }
+      else {
+        var body = response.body;
+        response.statusCode.should.equal(statusCode);
+        body.error.should.equal('Bad Request');
+        should.exist(body.validation);
+        body.validation.keys.indexOf('keys.fakeParam').should.not.equal(-1);
+        done();
+      }
+    });
+  });
+
+
   it('should fail because of not string endpoint value in payload', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
     payload.endpoint = 1;
@@ -342,6 +371,7 @@ describe(method + ' ' + endpoint, function() {
     var errorMessage = 'UnauthorizedRegistration';
 
     nock(helper.gcmUrl)
+      // the web-push-encryption module will try to call the actual endpoint url, so we just use nock to redirect any actual called url to our own fake url, which in return will respond again through nock
       .filteringPath(function() {
         return '/xxx';
       })
@@ -410,6 +440,7 @@ describe(method + ' ' + endpoint, function() {
     var errorMessage = 'UnauthorizedRegistration';
 
     nock(helper.gcmUrl)
+      // the web-push-encryption module will try to call the actual endpoint url, so we just use nock to redirect any actual called url to our own fake url, which in return will respond again through nock
       .filteringPath(function() {
         return '/xxx';
       })
@@ -448,6 +479,7 @@ describe(method + ' ' + endpoint, function() {
     var errorMessage = 'Fake Error';
 
     nock(helper.gcmUrl)
+      // the web-push-encryption module will try to call the actual endpoint url, so we just use nock to redirect any actual called url to our own fake url, which in return will respond again through nock
       .filteringPath(function() {
         return '/xxx';
       })
@@ -485,6 +517,7 @@ describe(method + ' ' + endpoint, function() {
     var errorCode = 404;
 
     nock(helper.gcmUrl)
+      // the web-push-encryption module will try to call the actual endpoint url, so we just use nock to redirect any actual called url to our own fake url, which in return will respond again through nock
       .filteringPath(function() {
         return '/xxx';
       })
@@ -520,6 +553,7 @@ describe(method + ' ' + endpoint, function() {
     var statusCode = 200;
 
     nock(helper.gcmUrl)
+      // the web-push-encryption module will try to call the actual endpoint url, so we just use nock to redirect any actual called url to our own fake url, which in return will respond again through nock
       .filteringPath(function() {
         return '/xxx';
       })
@@ -554,6 +588,7 @@ describe(method + ' ' + endpoint, function() {
     var statusCode = 500;
 
     nock(helper.gcmUrl)
+      // the web-push-encryption module will try to call the actual endpoint url, so we just use nock to redirect any actual called url to our own fake url, which in return will respond again through nock
       .filteringPath(function() {
         return '/xxx';
       })
@@ -594,6 +629,7 @@ describe(method + ' ' + endpoint, function() {
     var statusCode = 500;
 
     nock(helper.gcmUrl)
+      // the web-push-encryption module will try to call the actual endpoint url, so we just use nock to redirect any actual called url to our own fake url, which in return will respond again through nock
       .filteringPath(function() {
         return '/xxx';
       })
@@ -603,8 +639,7 @@ describe(method + ' ' + endpoint, function() {
     var revert = sinon.stub(helper.collectionClients, 'insert', function() {
       return Promise.resolve({
         result: {
-          ok: 0,
-          n: 0
+          ok: 0
         }
       });
     });
