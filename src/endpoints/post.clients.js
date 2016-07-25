@@ -27,6 +27,9 @@ module.exports.handler = function(request, reply) {
       if (err === 500) {
         return reply(utils.formatError('Error inserting the data')).code(500);
       }
+      if (err === 401) {
+        return reply().code(401);
+      }
       return reply(utils.formatError('Internal MongoDB error', err)).code(500);
     });
   })

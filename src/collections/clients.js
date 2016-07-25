@@ -82,7 +82,19 @@ module.exports.add = function(insert) {
       w: 1
     };
 
-    collection.insert(_insert, _options)
+    // check uniqueness of client, status doesn't matter
+    collection.findOne({
+      endpoint: insert.endpoint,
+      keys: insert.keys
+    })
+    .then(function(res) {
+      if (res) {
+        return reject(401);
+      }
+    })
+    .then(function() {
+      return collection.insert(_insert, _options);
+    })
     .then(function(res) {
       if (res.result.ok === 1 && res.result.n === 1) {
         return resolve(res.ops[0]);

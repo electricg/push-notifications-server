@@ -6,6 +6,7 @@ var should = require('should');
 var sinon = require('sinon');
 var _ = require('lodash');
 var helper = require('../helper');
+var collection = require('../../src/collections/clients');
 
 var endpoint = '/clients';
 var method = 'POST';
@@ -572,6 +573,42 @@ describe(method + ' ' + endpoint, function() {
         done();
       }
     });
+  });
+
+
+  it('should fail to register a valid client when it is already in the db', function(done) {
+    var payload = _.cloneDeep(helper.goodClients[0]);
+
+    var options = {
+      method: method,
+      baseUrl: helper.baseUrl,
+      url: endpoint,
+      json: true,
+      body: payload
+    };
+    var statusCode = 401;
+
+    nock(helper.gcmUrl)
+      // the web-push-encryption module will try to call the actual endpoint url, so we just use nock to redirect any actual called url to our own fake url, which in return will respond again through nock
+      .filteringPath(function() {
+        return '/xxx';
+      })
+      .post('/xxx')
+        .reply(201);
+
+    collection.add(payload)
+    .then(function() {
+      request(options, function(err, response) {
+        if (err) {
+          done(err);
+        }
+        else {
+          response.statusCode.should.equal(statusCode);
+          done();
+        }
+      });
+    })
+    .catch(done);
   });
 
 
