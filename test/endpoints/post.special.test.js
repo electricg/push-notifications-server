@@ -6,6 +6,7 @@ var should = require('should');
 var sinon = require('sinon');
 var _ = require('lodash');
 var helper = require('../helper');
+var collection = require('../../src/collections/clients');
 
 var endpoint = '/' + helper.config.get('privatePath');
 var method = 'POST';
@@ -189,6 +190,38 @@ describe(method + ' ' + endpoint, function() {
   });
 
 
+  it('should fail because of not string title value in payload', function(done) {
+    var payload = {
+      key: 'xxx',
+      msg: 'xxx',
+      title: 1
+    };
+
+    var options = {
+      method: method,
+      baseUrl: helper.baseUrl,
+      url: endpoint,
+      json: true,
+      body: payload
+    };
+    var statusCode = 400;
+
+    request(options, function(err, response) {
+      if (err) {
+        done(err);
+      }
+      else {
+        var body = response.body;
+        response.statusCode.should.equal(statusCode);
+        body.error.should.equal('Bad Request');
+        should.exist(body.validation);
+        body.validation.keys.indexOf('title').should.not.equal(-1);
+        done();
+      }
+    });
+  });
+
+
   it('should fail and return 401 because of not valid key', function(done) {
     var payload = {
       key: helper.config.get('privateAuth') + 'x',
@@ -303,19 +336,19 @@ describe(method + ' ' + endpoint, function() {
     var statusCode = 200;
 
     var data = _.cloneDeep(helper.goodClients);
-    data.push(_.cloneDeep(helper.goodClients[0]));
-    data.forEach(function(item) {
-      item.status = true;
-    });
 
     nock(helper.gcmUrl)
+      // the web-push-encryption module will try to call the actual endpoint url, so we just use nock to redirect any actual called url to our own fake url, which in return will respond again through nock
       .filteringPath(function() {
         return '/xxx';
       })
       .post('/xxx').times(data.length)
         .reply(201);
 
-    helper.collectionClients.insert(data)
+    Promise.map(data, function(item) {
+      return collection.add(item)
+      .catch(done);
+    })
     .then(function() {
       request(options, function(err, response) {
         if (err) {
@@ -325,7 +358,7 @@ describe(method + ' ' + endpoint, function() {
           var body = response.body;
           response.statusCode.should.equal(statusCode);
           body.status.should.equal(1);
-          body.succeeded.should.equal(2);
+          body.succeeded.should.equal(data.length);
           body.failed.should.equal(0);
           done();
         }
@@ -338,8 +371,7 @@ describe(method + ' ' + endpoint, function() {
   it('should succeed with active clients succeeding', function(done) {
     var payload = {
       key: helper.config.get('privateAuth'),
-      msg: 'xxx',
-      title: 'yyy'
+      msg: 'xxx'
     };
 
     var options = {
@@ -352,20 +384,33 @@ describe(method + ' ' + endpoint, function() {
     var statusCode = 200;
 
     var data = _.cloneDeep(helper.goodClients);
-    data.push(_.cloneDeep(helper.goodClients[0]));
-    data.push(_.cloneDeep(helper.goodClients[0]));
-    data[0].status = true;
-    data[1].status = true;
-    data[2].status = false;
 
     nock(helper.gcmUrl)
+      // the web-push-encryption module will try to call the actual endpoint url, so we just use nock to redirect any actual called url to our own fake url, which in return will respond again through nock
       .filteringPath(function() {
         return '/xxx';
       })
       .post('/xxx').times(data.length)
         .reply(201);
 
-    helper.collectionClients.insert(data)
+    Promise.map(data, function(item) {
+      return collection.add(item)
+      .catch(done);
+    })
+    .then(function(res) {
+      // remove one of the clients
+      var query = {
+        _id: res[0]._id,
+        endpoint: res[0].endpoint,
+        p256dh: res[0].keys.p256dh,
+        auth: res[0].keys.auth
+      };
+      var update = {
+        ip: helper.goodIp,
+        userAgent: helper.goodUserAgent
+      };
+      return collection.remove(query, update);
+    })
     .then(function() {
       request(options, function(err, response) {
         if (err) {
@@ -388,8 +433,7 @@ describe(method + ' ' + endpoint, function() {
   it('should succeed with at least one client failing', function(done) {
     var payload = {
       key: helper.config.get('privateAuth'),
-      msg: 'xxx',
-      title: 'yyy'
+      msg: 'xxx'
     };
 
     var options = {
@@ -402,18 +446,15 @@ describe(method + ' ' + endpoint, function() {
     var statusCode = 200;
 
     var data = _.cloneDeep(helper.goodClients);
-    data.push(_.cloneDeep(helper.goodClients[0]));
-    data.push(_.cloneDeep(helper.goodClients[0]));
     data[1].endpoint += 'x';
     data[2].endpoint += 'x';
-    data.forEach(function(item) {
-      item.status = true;
-    });
     var goodP = helper.goodClients[0].endpoint.split('/').pop();
 
     nock(helper.gcmUrl)
+      // the web-push-encryption module will try to call the actual endpoint url, so we just use nock to redirect any actual called url to our own fake url, which in return will respond again through nock
       .filteringPath(function(p) {
         var myP = p.split('/').pop();
+        // filter the clients I want to succeed and the ones I want to 
         if (myP === goodP) {
           return '/xxx';
         }
@@ -426,7 +467,10 @@ describe(method + ' ' + endpoint, function() {
       .post('/yyy').times(2)
         .replyWithError({ statusCode: 400, statusMessage: 'UnauthorizedRegistration' });
 
-    helper.collectionClients.insert(data)
+    Promise.map(data, function(item) {
+      return collection.add(item)
+      .catch(done);
+    })
     .then(function() {
       request(options, function(err, response) {
         if (err) {

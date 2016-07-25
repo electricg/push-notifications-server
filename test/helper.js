@@ -24,6 +24,20 @@ module.exports.goodClients = [
       'p256dh' : 'BOAIOs5VFlB7pOVaYeAhU_ZIKtQg5NIKQ7au039IuKHdOslq8At8aXTA6ei3vEVSwh3dGKlCoIeqS-EcNidCTRg=',
       'auth' : '5z1_fh3BTWc7txBFut3KdQ=='
     }
+  },
+  {
+    'endpoint': 'https://android.googleapis.com/gcm/send/frrNx6STZKI:APA91bFziNdYropcQWUtmmyyuRyWqgvJluhEfAv-__Ev9mguXnXWu54NwisaOXQJ3RBz-c-nNacBpMnzxJnX0m_AgOsuOXMC7f0YgJcBA0be3FWM3SNfTI6TUL5Wn3GOiQt5FIjCqD-8',
+    'keys': {
+      'p256dh': 'BGaZ5l0mB8P0aPRIPYPc_sgPKi_xkdzepCN1BoH4oTjcIgVEc3fhrzCXjyiOYXKOqJAIpqmA6d_ln8M1ejK2uu0=',
+      'auth': '1SJ4n4n_DN4yF5V93PG_Qw=='
+    }
+  },
+  {
+    'endpoint': 'https://android.googleapis.com/gcm/send/ckyDsqe9d3E:APA91bEtUMkrLt2logv3Sngkj9nLs10EtKOxErzhFG_xcy6Hm3xW5CJqpnbrq87yWwKe2Uk0_Aj26pPGI--LUB0E2KiZJic5z_JFZAgiZc9QAMf5VXO264Q6gqkEE3C9QCSMiT_sYdhL',
+    'keys': {
+      'p256dh': 'BD18x8dJWL7Zq74SVra3bj6vdstA6nNFncTahwHNQDh0RbB-mJcdL-Sk3ISnwlo9Y5B9abPijPoMJ-ni391JtAk=',
+      'auth': 'bTl-WZil4S06tN76_9iYRg=='
+    }
   }
 ];
 module.exports.badClients = [
