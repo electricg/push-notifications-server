@@ -4,6 +4,7 @@ var request = require('request');
 var sinon = require('sinon');
 var _ = require('lodash');
 var helper = require('../helper');
+var collection = require('../../src/collections/clients');
 
 var endpoint = '/clients';
 var method = 'GET';
@@ -67,12 +68,11 @@ describe(method + ' ' + endpoint + ' enabled', function() {
     };
     var statusCode = 200;
     
-    var data = _.cloneDeep(helper.goodClients);
-    data.forEach(function(item) {
-      item.date = new Date();
-    });
+    var data = _.cloneDeep(helper.goodClients[0]);
+    data.ip = 'xxx';
+    data.userAgent = 'yyy';
 
-    helper.collectionClients.insert(data)
+    collection.add(data)
     .then(function() {
       request(options, function(err, response) {
         if (err) {
@@ -82,7 +82,14 @@ describe(method + ' ' + endpoint + ' enabled', function() {
           response.statusCode.should.equal(statusCode);
           var body = response.body;
           Array.isArray(body).should.equal(true);
-          body.length.should.equal(data.length);
+          body.length.should.equal(1);
+          body[0].endpoint.should.equal(data.endpoint);
+          body[0].keys.p256dh.should.equal(data.keys.p256dh);
+          body[0].keys.auth.should.equal(data.keys.auth);
+          body[0].subscribed.ip.should.equal(data.ip);
+          body[0].subscribed.userAgent.should.equal(data.userAgent);
+          (typeof body[0].subscribed.date).should.equal('string');
+          body[0].status.should.equal(true);
           done();
         }
       });
