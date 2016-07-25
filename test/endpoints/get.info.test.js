@@ -1,5 +1,4 @@
 /* global describe, it */
-/* exported helper */
 var request = require('request');
 var helper = require('../helper');
 var package = require('../../package.json');
