@@ -1,11 +1,12 @@
 var Promise = require('bluebird');
+var config = require('../config');
 var db = require('../db');
-var ObjectID = db.Mongoose.Types.ObjectId;
+var collection = db.db.collection(config.get('collectionName'));
 
 module.exports.isValidId = function(id) {
   var _id;
   try {
-    _id = new ObjectID(id);
+    _id = new db.ObjectId(id);
   } catch(e) {
     _id = false;
   }
@@ -36,7 +37,7 @@ module.exports.remove = function(query, update) {
       multi: false
     };
 
-    db.collection.update(_query, _update, _options)
+    collection.update(_query, _update, _options)
     .then(function(res) {
       if (res.result.ok === 1 && res.result.n === 1) {
         return resolve();
@@ -54,7 +55,7 @@ module.exports.list = function(query, projection) {
   return new Promise(function(resolve, reject) {
     var _query = query || {};
     var _projection = projection || {};
-    db.collection.find(_query, _projection).toArray()
+    collection.find(_query, _projection).toArray()
     .then(function(res) {
       resolve(res);
     })
@@ -81,7 +82,7 @@ module.exports.add = function(insert) {
       w: 1
     };
 
-    db.collection.insert(_insert, _options)
+    collection.insert(_insert, _options)
     .then(function(res) {
       if (res.result.ok === 1 && res.result.n === 1) {
         return resolve(res.ops[0]);

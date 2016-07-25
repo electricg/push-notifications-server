@@ -1,6 +1,7 @@
 /* global describe, it */
 var sinon = require('sinon');
 var helper = require('../helper');
+var collection = helper.db.db.collection('test');
 
 describe('MongoDB', function() {
   it('should log error event', function(done) {
@@ -81,7 +82,7 @@ describe('MongoDB', function() {
 describe('MongoDB Driver functionalities using callbacks', function() {
 
   it('should insert document', function(done) {
-    helper.db.collection.insert({ a: 1 }, function(err, res) {
+    collection.insert({ a: 1 }, function(err, res) {
       if (err) {
         done(err);
       }
@@ -95,7 +96,7 @@ describe('MongoDB Driver functionalities using callbacks', function() {
 
 
   it('should update document', function(done) {
-    helper.db.collection.insert({ a: 1 }, function(err, res) {
+    collection.insert({ a: 1 }, function(err, res) {
       if (err) {
         done(err);
       }
@@ -104,7 +105,7 @@ describe('MongoDB Driver functionalities using callbacks', function() {
       var id = res.ops[0]._id.toString();
       id.should.not.equal('');
       res.ops[0].a.should.equal(1);
-      helper.db.collection.update({ a: 1 }, {$set: { a: 4 }}, { multi: true }, function(err, res) {
+      collection.update({ a: 1 }, {$set: { a: 4 }}, { multi: true }, function(err, res) {
         if (err) {
           done(err);
         }
@@ -118,7 +119,7 @@ describe('MongoDB Driver functionalities using callbacks', function() {
 
   it('should find a single document', function(done) {
     var id;
-    helper.db.collection.insert({ a: 1 }, function(err, res) {
+    collection.insert({ a: 1 }, function(err, res) {
       if (err) {
         done(err);
       }
@@ -127,7 +128,7 @@ describe('MongoDB Driver functionalities using callbacks', function() {
       id = res.ops[0]._id.toString();
       id.should.not.equal('');
       res.ops[0].a.should.equal(1);
-      helper.db.collection.findOne({ _id: helper.db.Mongoose.Types.ObjectId(id) }, function(err, res) {
+      collection.findOne({ _id: helper.db.ObjectId(id) }, function(err, res) {
         var _id = res._id.toString();
         res.a.should.equal(1);
         _id.should.equal(id);
@@ -138,7 +139,7 @@ describe('MongoDB Driver functionalities using callbacks', function() {
 
 
   it('should find multiple documents', function(done) {
-    helper.db.collection.insert({ a: 111 }, function(err, res) {
+    collection.insert({ a: 111 }, function(err, res) {
       if (err) {
         done(err);
       }
@@ -147,7 +148,7 @@ describe('MongoDB Driver functionalities using callbacks', function() {
       res.ops[0].a.should.equal(111);
       var id = res.ops[0]._id.toString();
       id.should.not.equal('');
-      helper.db.collection.insert({ a: 111 }, function(err, res) {
+      collection.insert({ a: 111 }, function(err, res) {
         if (err) {
           done(err);
         }
@@ -156,7 +157,7 @@ describe('MongoDB Driver functionalities using callbacks', function() {
         res.ops[0].a.should.equal(111);
         var id = res.ops[0]._id.toString();
         id.should.not.equal('');
-        return helper.db.collection.find({ a: 111 }).toArray()
+        return collection.find({ a: 111 }).toArray()
           .then(function(res) {
             try {
               res.length.should.equal(2);
@@ -174,7 +175,7 @@ describe('MongoDB Driver functionalities using callbacks', function() {
 
 
   it('should find all documents', function(done) {
-    helper.db.collection.insert({ b: 222 }, function(err, res) {
+    collection.insert({ b: 222 }, function(err, res) {
       if (err) {
         done(err);
       }
@@ -183,7 +184,7 @@ describe('MongoDB Driver functionalities using callbacks', function() {
       res.ops[0].b.should.equal(222);
       var id = res.ops[0]._id.toString();
       id.should.not.equal('');
-      helper.db.collection.insert({ a: 111 }, function(err, res) {
+      collection.insert({ a: 111 }, function(err, res) {
         if (err) {
           done(err);
         }
@@ -192,7 +193,7 @@ describe('MongoDB Driver functionalities using callbacks', function() {
         res.ops[0].a.should.equal(111);
         var id = res.ops[0]._id.toString();
         id.should.not.equal('');
-        return helper.db.collection.find().toArray()
+        return collection.find().toArray()
           .then(function(res) {
             try {
               res.length.should.equal(2);
@@ -210,7 +211,7 @@ describe('MongoDB Driver functionalities using callbacks', function() {
 
 
   it('should aggregate documents', function(done) {
-    helper.db.collection.insert({ b: 222 }, function(err, res) {
+    collection.insert({ b: 222 }, function(err, res) {
       if (err) {
         done(err);
       }
@@ -219,7 +220,7 @@ describe('MongoDB Driver functionalities using callbacks', function() {
       res.ops[0].b.should.equal(222);
       var id = res.ops[0]._id.toString();
       id.should.not.equal('');
-      helper.db.collection.insert({ a: 111 }, function(err, res) {
+      collection.insert({ a: 111 }, function(err, res) {
         if (err) {
           done(err);
         }
@@ -228,7 +229,7 @@ describe('MongoDB Driver functionalities using callbacks', function() {
         res.ops[0].a.should.equal(111);
         var id = res.ops[0]._id.toString();
         id.should.not.equal('');
-        return helper.db.collection.aggregate().toArray()
+        return collection.aggregate().toArray()
           .then(function(res) {
             try {
               res.length.should.equal(2);
@@ -247,7 +248,7 @@ describe('MongoDB Driver functionalities using callbacks', function() {
 
   it('should remove document', function(done) {
     var id;
-    helper.db.collection.insert({ a: 1 }, function(err, res) {
+    collection.insert({ a: 1 }, function(err, res) {
       if (err) {
         done(err);
       }
@@ -256,7 +257,7 @@ describe('MongoDB Driver functionalities using callbacks', function() {
       id = res.ops[0]._id.toString();
       id.should.not.equal('');
       res.ops[0].a.should.equal(1);
-      helper.db.collection.remove({ _id: helper.db.Mongoose.Types.ObjectId(id) }, function(err, res) {
+      collection.remove({ _id: helper.db.ObjectId(id) }, function(err, res) {
         if (err) {
           done(err);
         }
@@ -273,7 +274,7 @@ describe('MongoDB Driver functionalities using callbacks', function() {
 describe('MongoDB Driver functionalities using promises', function() {
 
   it('should insert document', function(done) {
-    helper.db.collection.insert({ a: 1 })
+    collection.insert({ a: 1 })
     .then(function(res) {
       res.result.ok.should.equal(1);
       res.result.n.should.equal(1);
@@ -286,14 +287,14 @@ describe('MongoDB Driver functionalities using promises', function() {
 
 
   it('should update document', function(done) {
-    helper.db.collection.insert({ a: 1 })
+    collection.insert({ a: 1 })
     .then(function(res) {
       res.result.ok.should.equal(1);
       res.result.n.should.equal(1);
       var id = res.ops[0]._id.toString();
       id.should.not.equal('');
       res.ops[0].a.should.equal(1);
-      return helper.db.collection.update({ a: 1 }, {$set: { a: 4 }}, { multi: true });
+      return collection.update({ a: 1 }, {$set: { a: 4 }}, { multi: true });
     })
     .then(function(res) {
       res.result.ok.should.equal(1);
@@ -306,14 +307,14 @@ describe('MongoDB Driver functionalities using promises', function() {
 
   it('should find a single document', function(done) {
     var id;
-    helper.db.collection.insert({ a: 1 })
+    collection.insert({ a: 1 })
     .then(function(res) {
       res.result.ok.should.equal(1);
       res.result.n.should.equal(1);
       id = res.ops[0]._id.toString();
       id.should.not.equal('');
       res.ops[0].a.should.equal(1);
-      return helper.db.collection.findOne({ _id: helper.db.Mongoose.Types.ObjectId(id) });
+      return collection.findOne({ _id: helper.db.ObjectId(id) });
     })
     .then(function(res) {
       var _id = res._id.toString();
@@ -326,14 +327,14 @@ describe('MongoDB Driver functionalities using promises', function() {
 
 
   it('should find multiple documents', function(done) {
-    helper.db.collection.insert({ a: 111 })
+    collection.insert({ a: 111 })
     .then(function(res) {
       res.result.ok.should.equal(1);
       res.result.n.should.equal(1);
       res.ops[0].a.should.equal(111);
       var id = res.ops[0]._id.toString();
       id.should.not.equal('');
-      return helper.db.collection.insert({ a: 111 });
+      return collection.insert({ a: 111 });
     })
     .then(function(res) {
       res.result.ok.should.equal(1);
@@ -341,7 +342,7 @@ describe('MongoDB Driver functionalities using promises', function() {
       res.ops[0].a.should.equal(111);
       var id = res.ops[0]._id.toString();
       id.should.not.equal('');
-      return helper.db.collection.find({ a: 111 }).toArray();
+      return collection.find({ a: 111 }).toArray();
     })
     .then(function(res) {
       res.length.should.equal(2);
@@ -352,14 +353,14 @@ describe('MongoDB Driver functionalities using promises', function() {
 
 
   it('should find all documents', function(done) {
-    helper.db.collection.insert({ b: 222 })
+    collection.insert({ b: 222 })
     .then(function(res) {
       res.result.ok.should.equal(1);
       res.result.n.should.equal(1);
       res.ops[0].b.should.equal(222);
       var id = res.ops[0]._id.toString();
       id.should.not.equal('');
-      return helper.db.collection.insert({ a: 111 });
+      return collection.insert({ a: 111 });
     })
     .then(function(res) {
       res.result.ok.should.equal(1);
@@ -367,7 +368,7 @@ describe('MongoDB Driver functionalities using promises', function() {
       res.ops[0].a.should.equal(111);
       var id = res.ops[0]._id.toString();
       id.should.not.equal('');
-      return helper.db.collection.find().toArray();
+      return collection.find().toArray();
     })
     .then(function(res) {
       res.length.should.equal(2);
@@ -378,14 +379,14 @@ describe('MongoDB Driver functionalities using promises', function() {
 
 
   it('should aggregate documents', function(done) {
-    helper.db.collection.insert({ b: 222 })
+    collection.insert({ b: 222 })
     .then(function(res) {
       res.result.ok.should.equal(1);
       res.result.n.should.equal(1);
       res.ops[0].b.should.equal(222);
       var id = res.ops[0]._id.toString();
       id.should.not.equal('');
-      return helper.db.collection.insert({ a: 111 });
+      return collection.insert({ a: 111 });
     })
     .then(function(res) {
       res.result.ok.should.equal(1);
@@ -393,7 +394,7 @@ describe('MongoDB Driver functionalities using promises', function() {
       res.ops[0].a.should.equal(111);
       var id = res.ops[0]._id.toString();
       id.should.not.equal('');
-      return helper.db.collection.aggregate().toArray();
+      return collection.aggregate().toArray();
     })
     .then(function(res) {
       res.length.should.equal(2);
@@ -405,14 +406,14 @@ describe('MongoDB Driver functionalities using promises', function() {
 
   it('should remove document', function(done) {
     var id;
-    helper.db.collection.insert({ a: 1 })
+    collection.insert({ a: 1 })
     .then(function(res) {
       res.result.ok.should.equal(1);
       res.result.n.should.equal(1);
       id = res.ops[0]._id.toString();
       id.should.not.equal('');
       res.ops[0].a.should.equal(1);
-      return helper.db.collection.remove({ _id: helper.db.Mongoose.Types.ObjectId(id) });
+      return collection.remove({ _id: helper.db.ObjectId(id) });
     })
     .then(function(res) {
       res.result.ok.should.equal(1);

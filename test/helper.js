@@ -5,12 +5,15 @@ var mongoose = new MMongoose();
 var mockgoose = require('mockgoose');
 var nock = require('nock');
 var bluebird = require('bluebird');
+var Promise = bluebird;
+var _ = require('lodash');
 var config = require('../src/config');
 var db = require('../src/db');
 var server;
 
 module.exports.config = config;
 module.exports.db = db;
+module.exports.collectionClients = db.db.collection(config.get('collectionName'));
 
 module.exports.baseUrl = 'http://' + config.get('host') + ':' + config.get('port');
 
@@ -52,7 +55,10 @@ afterEach(function(done) {
   nock.cleanAll();
   if (mongoose.isMocked === true) {
     mockgoose.reset(function() {
-      db.collection.remove()
+      var collections = _.keys(Mongoose.connections[0].collections);
+      Promise.map(collections, function(collection) {
+        return db.db.collection(collection).remove();
+      })
       .then(function() {
         done();
       })

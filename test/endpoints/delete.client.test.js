@@ -140,7 +140,7 @@ describe(method + ' ' + endpoint, function() {
     var data = _.cloneDeep(helper.goodClients[0]);
     data.date = new Date();
 
-    helper.db.collection.insert(data)
+    helper.collectionClients.insert(data)
     .then(function(doc) {
       var res = doc.ops[0];
       var id = res._id;
@@ -179,7 +179,7 @@ describe(method + ' ' + endpoint, function() {
     };
     var statusCode = 500;
 
-    var revert = sinon.stub(helper.db.collection, 'update', function() {
+    var revert = sinon.stub(helper.collectionClients, 'update', function() {
       return Promise.reject(new Error('fake db error'));
     });
 
@@ -212,7 +212,7 @@ describe(method + ' ' + endpoint, function() {
     };
     var statusCode = 404;
 
-    var revert = sinon.stub(helper.db.collection, 'update', function() {
+    var revert = sinon.stub(helper.collectionClients, 'update', function() {
       return Promise.resolve({
         result: {
           ok: 0
@@ -248,7 +248,7 @@ describe(method + ' ' + endpoint, function() {
     var data = _.cloneDeep(helper.goodClients[0]);
     data.date = new Date();
 
-    helper.db.collection.insert(data)
+    helper.collectionClients.insert(data)
     .then(function(doc) {
       var res = doc.ops[0];
       var id = res._id;

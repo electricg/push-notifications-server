@@ -25,7 +25,7 @@ describe(method + ' ' + endpoint + ' enabled', function() {
 
 
   it('should fail and return 500 because of a problem with the db', function(done) {
-    var revert = sinon.stub(helper.db.collection, 'find', function() {
+    var revert = sinon.stub(helper.collectionClients, 'find', function() {
       return {
         toArray: function() {
           return Promise.reject(new Error('fake db error'));
@@ -72,7 +72,7 @@ describe(method + ' ' + endpoint + ' enabled', function() {
       item.date = new Date();
     });
 
-    helper.db.collection.insert(data)
+    helper.collectionClients.insert(data)
     .then(function() {
       request(options, function(err, response) {
         if (err) {

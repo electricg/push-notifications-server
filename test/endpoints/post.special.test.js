@@ -231,7 +231,7 @@ describe(method + ' ' + endpoint, function() {
     };
     var statusCode = 500;
 
-    var revert = sinon.stub(helper.db.collection, 'find', function() {
+    var revert = sinon.stub(helper.collectionClients, 'find', function() {
       return {
         toArray: function() {
           return Promise.reject(new Error('fake db error'));
@@ -315,7 +315,7 @@ describe(method + ' ' + endpoint, function() {
       .post('/xxx').times(data.length)
         .reply(201);
 
-    helper.db.collection.insert(data)
+    helper.collectionClients.insert(data)
     .then(function() {
       request(options, function(err, response) {
         if (err) {
@@ -365,7 +365,7 @@ describe(method + ' ' + endpoint, function() {
       .post('/xxx').times(data.length)
         .reply(201);
 
-    helper.db.collection.insert(data)
+    helper.collectionClients.insert(data)
     .then(function() {
       request(options, function(err, response) {
         if (err) {
@@ -426,7 +426,7 @@ describe(method + ' ' + endpoint, function() {
       .post('/yyy').times(2)
         .replyWithError({ statusCode: 400, statusMessage: 'UnauthorizedRegistration' });
 
-    helper.db.collection.insert(data)
+    helper.collectionClients.insert(data)
     .then(function() {
       request(options, function(err, response) {
         if (err) {

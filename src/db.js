@@ -24,8 +24,7 @@ module.exports.connect = connect;
 var db = Mongoose.connection;
 
 module.exports.db = db;
-module.exports.collection = db.collection(config.get('collectionName'));
-module.exports.Mongoose = Mongoose;
+module.exports.ObjectId = Mongoose.Types.ObjectId;
 
 module.exports.reconnect = function(cb) {
   if (db.readyState === 0) {
