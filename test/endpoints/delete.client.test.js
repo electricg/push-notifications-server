@@ -35,7 +35,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail with an invalid id', function(done) {
-    var id = 'xxx';
+    var id = helper.badId;
     var options = {
       method: method,
       baseUrl: helper.baseUrl,
@@ -59,7 +59,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail because no Authorization header is sent', function(done) {
-    var id = '57891df47bc6aff129e7fe3b';
+    var id = helper.goodId;
     var options = {
       method: method,
       baseUrl: helper.baseUrl,
@@ -81,7 +81,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail because an invalid Authorization header is sent', function(done) {
-    var id = '57891df47bc6aff129e7fe3b';
+    var id = helper.goodId;
     var headers = { 'Authorization': 'xxx' };
     var options = {
       method: method,
@@ -105,7 +105,7 @@ describe(method + ' ' + endpoint, function() {
 
 
   it('should fail because no key values in Authorization header are sent', function(done) {
-    var id = '57891df47bc6aff129e7fe3b';
+    var id = helper.goodId;
     var headers = { 'Authorization': helper.config.get('authHeader') };
     var options = {
       method: method,
@@ -130,7 +130,7 @@ describe(method + ' ' + endpoint, function() {
   });
 
 
-  it('should fail because the Authorization header does not match the id in the db', function(done) {
+  it('should fail because the Authorization header endpoint does not match the one in the db', function(done) {
     var options = {
       method: method,
       baseUrl: helper.baseUrl,
@@ -140,8 +140,6 @@ describe(method + ' ' + endpoint, function() {
     var statusCode = 404;
 
     var data = _.cloneDeep(helper.goodClients[0]);
-    data.ip = 'xxx';
-    data.userAgent = 'yyy';
 
     collection.add(data)
     .then(function(res) {
@@ -169,8 +167,82 @@ describe(method + ' ' + endpoint, function() {
   });
 
 
+  it('should fail because the Authorization header p256dh does not match the one in the db', function(done) {
+    var options = {
+      method: method,
+      baseUrl: helper.baseUrl,
+      url: endpoint,
+      json: true
+    };
+    var statusCode = 404;
+
+    var data = _.cloneDeep(helper.goodClients[0]);
+
+    collection.add(data)
+    .then(function(res) {
+      var id = res._id;
+      var endpoint = res.endpoint;
+      var p256dh = res.keys.p256dh + 'x';
+      var auth = res.keys.auth;
+      options.url += '/' + id.toString();
+      options.headers = {
+        'Authorization': helper.config.get('authHeader') + 'endpoint=' + endpoint + ',p256dh=' + p256dh + ',auth=' + auth
+      };
+      request(options, function(err, response) {
+        if (err) {
+          done(err);
+        }
+        else {
+          response.statusCode.should.equal(statusCode);
+          var body = response.body;
+          body.error.should.equal('Not Found');
+          done();
+        }
+      });
+    })
+    .catch(done);
+  });
+
+
+  it('should fail because the Authorization header auth does not match the one in the db', function(done) {
+    var options = {
+      method: method,
+      baseUrl: helper.baseUrl,
+      url: endpoint,
+      json: true
+    };
+    var statusCode = 404;
+
+    var data = _.cloneDeep(helper.goodClients[0]);
+
+    collection.add(data)
+    .then(function(res) {
+      var id = res._id;
+      var endpoint = res.endpoint;
+      var p256dh = res.keys.p256dh;
+      var auth = res.keys.auth + 'x';
+      options.url += '/' + id.toString();
+      options.headers = {
+        'Authorization': helper.config.get('authHeader') + 'endpoint=' + endpoint + ',p256dh=' + p256dh + ',auth=' + auth
+      };
+      request(options, function(err, response) {
+        if (err) {
+          done(err);
+        }
+        else {
+          response.statusCode.should.equal(statusCode);
+          var body = response.body;
+          body.error.should.equal('Not Found');
+          done();
+        }
+      });
+    })
+    .catch(done);
+  });
+
+
   it('should fail and return 500 because of a problem with the db', function(done) {
-    var id = '57891df47bc6aff129e7fe3b';
+    var id = helper.goodId;
     var headers = { 'Authorization': helper.config.get('authHeader') };
     var options = {
       method: method,
@@ -202,8 +274,8 @@ describe(method + ' ' + endpoint, function() {
   });
 
 
-  it('should fail and return 500 because of a problem with deleting the data from the db', function(done) {
-    var id = '57891df47bc6aff129e7fe3b';
+  it('should fail and return 500 because of a problem with updating the data in the db', function(done) {
+    var id = helper.goodId;
     var headers = { 'Authorization': helper.config.get('authHeader') };
     var options = {
       method: method,
@@ -238,7 +310,7 @@ describe(method + ' ' + endpoint, function() {
   });
 
 
-  it('should succeed to delete the client', function(done) {
+  it('should succeed to remove the client', function(done) {
     var options = {
       method: method,
       baseUrl: helper.baseUrl,
@@ -248,11 +320,11 @@ describe(method + ' ' + endpoint, function() {
     var statusCode = 200;
 
     var data = _.cloneDeep(helper.goodClients[0]);
-    data.ip = '';
-    data.userAgent = '';
+    data.ip = helper.goodIp;
+    data.userAgent = helper.goodUserAgent;
     var createdId;
-    var unsubIp = 'xxx2';
-    var unsubUserAgent = 'yyy2';
+    var unsubIp = helper.goodIp + '2';
+    var unsubUserAgent = helper.goodUserAgent + '2';
 
     collection.add(data)
     .then(function(res) {
@@ -265,8 +337,8 @@ describe(method + ' ' + endpoint, function() {
       res.endpoint.should.equal(data.endpoint);
       res.keys.p256dh.should.equal(data.keys.p256dh);
       res.keys.auth.should.equal(data.keys.auth);
-      res.subscribed.ip.should.equal(data.ip);
-      res.subscribed.userAgent.should.equal(data.userAgent);
+      res.subscribed.ip.should.equal(helper.goodIp);
+      res.subscribed.userAgent.should.equal(helper.goodUserAgent);
       (typeof res.subscribed.date).should.equal('object');
       res.status.should.equal(true);
 
@@ -291,8 +363,8 @@ describe(method + ' ' + endpoint, function() {
             res.keys.p256dh.should.equal(data.keys.p256dh);
             res.keys.auth.should.equal(data.keys.auth);
             res.status.should.equal(false);
-            res.subscribed.ip.should.equal(data.ip);
-            res.subscribed.userAgent.should.equal(data.userAgent);
+            res.subscribed.ip.should.equal(helper.goodIp);
+            res.subscribed.userAgent.should.equal(helper.goodUserAgent);
             (typeof res.subscribed.date).should.equal('object');
             res.unsubscribed.ip.should.equal(unsubIp);
             res.unsubscribed.userAgent.should.equal(unsubUserAgent);
