@@ -9,7 +9,7 @@ var DEFAULT = {
   PRIVATE_AUTH: 'xxx', // secret word to allow push endpoint
   PRIVATE_PATH: 'special', // secret path of the push endpoint
   GCM_AUTH: 'xxx', // GCM API key
-  COLLECTION_NAME: 'clients',
+  COLLECTION_CLIENTS: 'clients',
   WELCOME_MSG: 'You have successfully subscribed to ELECTRIC_G notifications!',
   PUBLIC_LIST: false,
   AUTH_HEADER: 'PUSH-NOTIFICATION ',
@@ -28,13 +28,13 @@ nconf.set('allowedOrigins', utils.formatOrigins(nconf.get('CLIENTS')));
 nconf.set('privateAuth', nconf.get('PRIVATE_AUTH'));
 nconf.set('privatePath', nconf.get('PRIVATE_PATH'));
 nconf.set('gcmAuth', nconf.get('GCM_AUTH'));
-nconf.set('collectionName', nconf.get('COLLECTION_NAME'));
+nconf.set('collectionClients', nconf.get('COLLECTION_CLIENTS'));
 nconf.set('welcomeMsg', nconf.get('WELCOME_MSG'));
 nconf.set('publicList', nconf.get('PUBLIC_LIST') === 'true' || nconf.get('PUBLIC_LIST') === true);
 nconf.set('authHeader', nconf.get('AUTH_HEADER'));
 
 module.exports.get = function(param) {
-  var arr = ['port', 'host', 'mongodbUrl', 'allowedOrigins', 'privateAuth', 'privatePath', 'gcmAuth', 'collectionName', 'welcomeMsg', 'publicList', 'authHeader'];
+  var arr = ['port', 'host', 'mongodbUrl', 'allowedOrigins', 'privateAuth', 'privatePath', 'gcmAuth', 'collectionClients', 'welcomeMsg', 'publicList', 'authHeader'];
   if (arr.indexOf(param) !== -1) {
     return nconf.get(param);
   }

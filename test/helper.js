@@ -13,7 +13,7 @@ var server;
 
 module.exports.config = config;
 module.exports.db = db;
-module.exports.collectionClients = db.db.collection(config.get('collectionName'));
+module.exports.collectionClients = db.db.collection(config.get('collectionClients'));
 
 module.exports.baseUrl = 'http://' + config.get('host') + ':' + config.get('port');
 
