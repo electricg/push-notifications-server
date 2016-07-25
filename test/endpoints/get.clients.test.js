@@ -9,7 +9,6 @@ var collection = require('../../src/collections/clients');
 var endpoint = '/clients';
 var method = 'GET';
 
-
 describe(method + ' ' + endpoint + ' enabled', function() {
   var getConfigStub;
   before(function(done) {
@@ -69,8 +68,8 @@ describe(method + ' ' + endpoint + ' enabled', function() {
     var statusCode = 200;
     
     var data = _.cloneDeep(helper.goodClients[0]);
-    data.ip = 'xxx';
-    data.userAgent = 'yyy';
+    data.ip = helper.goodIp;
+    data.userAgent = helper.goodUserAgent;
 
     collection.add(data)
     .then(function() {
@@ -86,8 +85,8 @@ describe(method + ' ' + endpoint + ' enabled', function() {
           body[0].endpoint.should.equal(data.endpoint);
           body[0].keys.p256dh.should.equal(data.keys.p256dh);
           body[0].keys.auth.should.equal(data.keys.auth);
-          body[0].subscribed.ip.should.equal(data.ip);
-          body[0].subscribed.userAgent.should.equal(data.userAgent);
+          body[0].subscribed.ip.should.equal(helper.goodIp);
+          body[0].subscribed.userAgent.should.equal(helper.goodUserAgent);
           (typeof body[0].subscribed.date).should.equal('string');
           body[0].status.should.equal(true);
           done();
