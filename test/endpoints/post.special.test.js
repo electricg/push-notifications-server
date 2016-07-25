@@ -249,7 +249,7 @@ describe(method + ' ' + endpoint, function() {
   });
 
 
-  it('should fail and return 500 because of a problem with the db', function(done) {
+  it('should fail and return 500 because of a problem with the db in the clients collection', function(done) {
     var payload = {
       key: helper.config.get('privateAuth'),
       msg: 'xxx'
@@ -289,6 +289,84 @@ describe(method + ' ' + endpoint, function() {
   });
 
 
+  it('should succeed and return 200 but with a problem with the db in the messages collection', function(done) {
+    var payload = {
+      key: helper.config.get('privateAuth'),
+      msg: 'xxx'
+    };
+
+    var options = {
+      method: method,
+      baseUrl: helper.baseUrl,
+      url: endpoint,
+      json: true,
+      body: payload
+    };
+    var statusCode = 200;
+
+    var revert = sinon.stub(helper.collectionMessages, 'insert', function() {
+      return Promise.reject(new Error('fake db error'));
+    });
+
+    request(options, function(err, response) {
+      revert.restore();
+      if (err) {
+        done(err);
+      }
+      else {
+        var body = response.body;
+        response.statusCode.should.equal(statusCode);
+        body.status.should.equal(0);
+        body.message.should.equal('No keys registered');
+        body.err.error.should.equal('Internal MongoDB error');
+        body.err.details.should.equal('fake db error');
+        done();
+      }
+    });
+  });
+
+
+  it('should succed and return 200 but with a problem adding the log in the messages collection', function(done) {
+    var payload = {
+      key: helper.config.get('privateAuth'),
+      msg: 'xxx'
+    };
+
+    var options = {
+      method: method,
+      baseUrl: helper.baseUrl,
+      url: endpoint,
+      json: true,
+      body: payload
+    };
+    var statusCode = 200;
+
+    var revert = sinon.stub(helper.collectionMessages, 'insert', function() {
+      return Promise.resolve({
+        result: {
+          ok: 0
+        }
+      });
+    });
+
+    request(options, function(err, response) {
+      revert.restore();
+      if (err) {
+        done(err);
+      }
+      else {
+        var body = response.body;
+        response.statusCode.should.equal(statusCode);
+        body.status.should.equal(0);
+        body.message.should.equal('No keys registered');
+        body.err.error.should.equal('Internal MongoDB error');
+        body.err.details.should.equal('');
+        done();
+      }
+    });
+  });
+
+
   it('should succeed with no clients registered', function(done) {
     var payload = {
       key: helper.config.get('privateAuth'),
@@ -304,6 +382,11 @@ describe(method + ' ' + endpoint, function() {
     };
     var statusCode = 200;
 
+    options.headers = {
+      'User-Agent': helper.goodUserAgent,
+      'X-Forwarded-For': helper.goodIp
+    };
+
     request(options, function(err, response) {
       if (err) {
         done(err);
@@ -313,7 +396,20 @@ describe(method + ' ' + endpoint, function() {
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(0);
         body.message.should.equal('No keys registered');
-        done();
+        
+        helper.collectionMessages.find().toArray()
+        .then(function(res) {
+          res.length.should.equal(1);
+          res[0].msg.should.equal(payload.msg);
+          res[0].title.should.equal('');
+          (typeof res[0].date).should.equal('object');
+          res[0].ip.should.equal(helper.goodIp);
+          res[0].userAgent.should.equal(helper.goodUserAgent);
+          res[0].result.status.should.equal(0);
+          res[0].result.message.should.equal('No keys registered');
+          done();
+        })
+        .catch(done);
       }
     });
   });
@@ -334,6 +430,11 @@ describe(method + ' ' + endpoint, function() {
       body: payload
     };
     var statusCode = 200;
+
+    options.headers = {
+      'User-Agent': helper.goodUserAgent,
+      'X-Forwarded-For': helper.goodIp
+    };
 
     var data = _.cloneDeep(helper.goodClients);
 
@@ -360,7 +461,21 @@ describe(method + ' ' + endpoint, function() {
           body.status.should.equal(1);
           body.succeeded.should.equal(data.length);
           body.failed.should.equal(0);
-          done();
+          
+          helper.collectionMessages.find().toArray()
+          .then(function(res) {
+            res.length.should.equal(1);
+            res[0].msg.should.equal(payload.msg);
+            res[0].title.should.equal(payload.title);
+            (typeof res[0].date).should.equal('object');
+            res[0].ip.should.equal(helper.goodIp);
+            res[0].userAgent.should.equal(helper.goodUserAgent);
+            res[0].result.status.should.equal(1);
+            res[0].result.succeeded.should.equal(data.length);
+            res[0].result.failed.should.equal(0);
+            done();
+          })
+          .catch(done);
         }
       });
     })
@@ -382,6 +497,11 @@ describe(method + ' ' + endpoint, function() {
       body: payload
     };
     var statusCode = 200;
+
+    options.headers = {
+      'User-Agent': helper.goodUserAgent,
+      'X-Forwarded-For': helper.goodIp
+    };
 
     var data = _.cloneDeep(helper.goodClients);
 
@@ -422,7 +542,21 @@ describe(method + ' ' + endpoint, function() {
           body.status.should.equal(1);
           body.succeeded.should.equal(2);
           body.failed.should.equal(0);
-          done();
+          
+          helper.collectionMessages.find().toArray()
+          .then(function(res) {
+            res.length.should.equal(1);
+            res[0].msg.should.equal(payload.msg);
+            res[0].title.should.equal('');
+            (typeof res[0].date).should.equal('object');
+            res[0].ip.should.equal(helper.goodIp);
+            res[0].userAgent.should.equal(helper.goodUserAgent);
+            res[0].result.status.should.equal(1);
+            res[0].result.succeeded.should.equal(2);
+            res[0].result.failed.should.equal(0);
+            done();
+          })
+          .catch(done);
         }
       });
     })
@@ -444,6 +578,11 @@ describe(method + ' ' + endpoint, function() {
       body: payload
     };
     var statusCode = 200;
+
+    options.headers = {
+      'User-Agent': helper.goodUserAgent,
+      'X-Forwarded-For': helper.goodIp
+    };
 
     var data = _.cloneDeep(helper.goodClients);
     data[1].endpoint += 'x';
@@ -482,7 +621,21 @@ describe(method + ' ' + endpoint, function() {
           body.status.should.equal(0);
           body.succeeded.should.equal(1);
           body.failed.should.equal(2);
-          done();
+
+          helper.collectionMessages.find().toArray()
+          .then(function(res) {
+            res.length.should.equal(1);
+            res[0].msg.should.equal(payload.msg);
+            res[0].title.should.equal('');
+            (typeof res[0].date).should.equal('object');
+            res[0].ip.should.equal(helper.goodIp);
+            res[0].userAgent.should.equal(helper.goodUserAgent);
+            res[0].result.status.should.equal(0);
+            res[0].result.succeeded.should.equal(1);
+            res[0].result.failed.should.equal(2);
+            done();
+          })
+          .catch(done);
         }
       });
     })

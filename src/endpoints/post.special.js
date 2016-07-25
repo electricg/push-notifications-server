@@ -3,7 +3,8 @@ var joi = require('joi');
 var config = require('../config');
 var utils = require('../utils');
 var webpush = require('../webpush');
-var collection = require('../collections/clients');
+var collectionClients = require('../collections/clients');
+var collectionMessages = require('../collections/messages');
 
 module.exports.handler = function(request, reply) {
   var key = request.payload.key;
@@ -19,21 +20,39 @@ module.exports.handler = function(request, reply) {
     endpoint: true,
     keys: true
   };
-  collection.list(query, projection)
+  collectionClients.list(query, projection)
   .then(function(doc) {
     if (doc.length) {
       return webpush.sendPushes(doc, msg, title)
       .then(function(res) {
-        return reply({ status: 1, failed: res.e, succeeded: res.r });
+        return { status: 1, failed: res.e, succeeded: res.r };
       })
       .catch(function(err) {
         // not returning an HTTP error status code because it could be a mixture of good and bad pushes 
-        return reply({ status: 0, failed: err.e, succeeded: err.r });
+        return { status: 0, failed: err.e, succeeded: err.r };
       });
     }
     else {
-      return reply({ status: 0, message: 'No keys registered' });
+      return { status: 0, message: 'No keys registered' };
     }
+  })
+  .then(function(res) {
+    var ip = request.headers['x-forwarded-for'] || request.info.remoteAddress;
+    var userAgent = request.headers['user-agent'];
+    var insert = {
+      msg: msg,
+      title: title || '',
+      ip: ip,
+      userAgent: userAgent,
+      result: res
+    };
+    return collectionMessages.add(insert)
+    .catch(function(err) {
+      res.err = utils.formatError('Internal MongoDB error', err);
+    })
+    .then(function() {
+      return reply(res);
+    });
   })
   .catch(function(err) {
     return reply(utils.formatError('Internal MongoDB error', err)).code(500);
