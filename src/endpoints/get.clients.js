@@ -1,11 +1,11 @@
 // Get all subscriptions
 var config = require('../config');
-var db = require('../db');
 var utils = require('../utils');
+var collection = require('../collections/clients');
 
 module.exports.handler = function(request, reply) {
   if (config.get('publicList')) {
-    db.collection.find().toArray()
+    collection.list()
     .then(function(doc) {
       reply(doc);
     })

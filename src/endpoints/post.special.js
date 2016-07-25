@@ -1,9 +1,9 @@
 // Send message to all subscriptions
 var joi = require('joi');
 var config = require('../config');
-var db = require('../db');
 var utils = require('../utils');
 var webpush = require('../webpush');
+var collection = require('../collections/clients');
 
 module.exports.handler = function(request, reply) {
   var key = request.payload.key;
@@ -19,7 +19,7 @@ module.exports.handler = function(request, reply) {
     endpoint: true,
     keys: true
   };
-  db.collection.find(query, projection).toArray()
+  collection.list(query, projection)
   .then(function(doc) {
     if (doc.length) {
       return webpush.sendPushes(doc, msg, title)

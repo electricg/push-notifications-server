@@ -1,8 +1,8 @@
 // Add subscription
 var joi = require('joi');
-var db = require('../db');
 var utils = require('../utils');
 var webpush = require('../webpush');
+var collection = require('../collections/clients');
 
 module.exports.handler = function(request, reply) {
   var endpoint = request.payload.endpoint;
@@ -12,26 +12,21 @@ module.exports.handler = function(request, reply) {
   var data = {
     endpoint: endpoint,
     keys: keys,
-    subscribed: {
-      date: new Date(),
-      ip: ip,
-      userAgent: userAgent
-    },
-    status: true
+    ip: ip,
+    userAgent: userAgent
   };
-  var opt = { w: 1 };
   // before saving into the db, send one notification to check the endpoint exists or the keys are ok
   webpush.checkSubscribtion({ endpoint: endpoint, keys: keys })
   .then(function() {
-    db.collection.insert(data, opt)
+    collection.add(data)
     .then(function(doc) {
-      if (doc.result.ok === 1 && doc.result.n === 1) {
-        var _id = doc.ops[0]._id;
-        return reply({ status: 1, id: _id });
-      }
-      return reply(utils.formatError('Error inserting the data')).code(500);
+      var _id = doc._id;
+      return reply({ status: 1, id: _id });
     })
     .catch(function(err) {
+      if (err === 500) {
+        return reply(utils.formatError('Error inserting the data')).code(500);
+      }
       return reply(utils.formatError('Internal MongoDB error', err)).code(500);
     });
   })

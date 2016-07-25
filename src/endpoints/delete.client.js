@@ -1,16 +1,13 @@
 // Delete subscription
 var joi = require('joi');
 var config = require('../config');
-var db = require('../db');
 var utils = require('../utils');
+var collection = require('../collections/clients');
 
 module.exports.handler = function(request, reply) {
-  var ObjectID = db.Mongoose.Types.ObjectId;
   var id = request.params.id;
-  var _id;
-  try {
-    _id = new ObjectID(id);
-  } catch(e) {
+  var _id = collection.isValidId(id);
+  if (!_id) {
     return reply(utils.formatError('Not Found')).code(404);
   }
   
@@ -36,32 +33,22 @@ module.exports.handler = function(request, reply) {
   var query = {
     '_id' : _id,
     'endpoint': authObj.endpoint,
-    'keys.p256dh': authObj.p256dh,
-    'keys.auth': authObj.auth
+    'p256dh': authObj.p256dh,
+    'auth': authObj.auth
   };
   var update = {
-    '$set': {
-      status: false,
-      unsubscribed: {
-        date: new Date(),
-        ip: ip,
-        userAgent: userAgent
-      }
-    }
-  };
-  var options = {
-    upsert: false,
-    multi: false
+    ip: ip,
+    userAgent: userAgent
   };
   
-  db.collection.update(query, update, options)
-  .then(function(doc) {
-    if (doc.result.ok === 1 && doc.result.n === 1) {
-      return reply({ status: 1});
-    }
-    return reply(utils.formatError('Not Found')).code(404);
+  collection.remove(query, update)
+  .then(function() {
+    return reply({ status: 1});
   })
   .catch(function(err) {
+    if (err === 404) {
+      return reply(utils.formatError('Not Found')).code(404);
+    }
     return reply(utils.formatError('Internal MongoDB error', err)).code(500);
   });
 };
