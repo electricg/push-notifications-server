@@ -1,9 +1,11 @@
 /* global describe, it */
 var Promise = require('bluebird');
 var request = require('request');
+var should = require('should');
 var sinon = require('sinon');
 var _ = require('lodash');
 var helper = require('../helper');
+var collection = require('../../src/collections/clients');
 
 var endpoint = '/client';
 var method = 'DELETE';
@@ -138,16 +140,16 @@ describe(method + ' ' + endpoint, function() {
     var statusCode = 404;
 
     var data = _.cloneDeep(helper.goodClients[0]);
-    data.date = new Date();
+    data.ip = 'xxx';
+    data.userAgent = 'yyy';
 
-    helper.collectionClients.insert(data)
-    .then(function(doc) {
-      var res = doc.ops[0];
+    collection.add(data)
+    .then(function(res) {
       var id = res._id;
       var endpoint = res.endpoint + 'x';
       var p256dh = res.keys.p256dh;
       var auth = res.keys.auth;
-      options.url += '/' + id;
+      options.url += '/' + id.toString();
       options.headers = {
         'Authorization': helper.config.get('authHeader') + 'endpoint=' + endpoint + ',p256dh=' + p256dh + ',auth=' + auth
       };
@@ -246,24 +248,58 @@ describe(method + ' ' + endpoint, function() {
     var statusCode = 200;
 
     var data = _.cloneDeep(helper.goodClients[0]);
-    data.date = new Date();
+    data.ip = '';
+    data.userAgent = '';
+    var createdId;
+    var unsubIp = 'xxx2';
+    var unsubUserAgent = 'yyy2';
 
-    helper.collectionClients.insert(data)
-    .then(function(doc) {
-      var res = doc.ops[0];
-      var id = res._id;
+    collection.add(data)
+    .then(function(res) {
+      // check value inserted in the db first
+      try {
+        createdId = helper.db.ObjectId(res._id);
+      } catch(e) {
+        should.not.exist(e);
+      }
+      res.endpoint.should.equal(data.endpoint);
+      res.keys.p256dh.should.equal(data.keys.p256dh);
+      res.keys.auth.should.equal(data.keys.auth);
+      res.subscribed.ip.should.equal(data.ip);
+      res.subscribed.userAgent.should.equal(data.userAgent);
+      (typeof res.subscribed.date).should.equal('object');
+      res.status.should.equal(true);
+
       var endpoint = res.endpoint;
       var p256dh = res.keys.p256dh;
       var auth = res.keys.auth;
-      options.url += '/' + id;
+      options.url += '/' + createdId.toString();
       options.headers = {
-        'Authorization': helper.config.get('authHeader') + 'endpoint=' + endpoint + ',p256dh=' + p256dh + ',auth=' + auth
+        'Authorization': helper.config.get('authHeader') + 'endpoint=' + endpoint + ',p256dh=' + p256dh + ',auth=' + auth,
+        'User-Agent': unsubUserAgent,
+        'X-Forwarded-For': unsubIp
       };
       request(options, function(err, response) {
         if (err) {
           done(err);
         }
         else {
+          // check value updated in the db
+          helper.collectionClients.findOne({ _id: createdId })
+          .then(function(res) {
+            res.endpoint.should.equal(data.endpoint);
+            res.keys.p256dh.should.equal(data.keys.p256dh);
+            res.keys.auth.should.equal(data.keys.auth);
+            res.status.should.equal(false);
+            res.subscribed.ip.should.equal(data.ip);
+            res.subscribed.userAgent.should.equal(data.userAgent);
+            (typeof res.subscribed.date).should.equal('object');
+            res.unsubscribed.ip.should.equal(unsubIp);
+            res.unsubscribed.userAgent.should.equal(unsubUserAgent);
+            (typeof res.unsubscribed.date).should.equal('object');
+          })
+          .catch(done);
+
           response.statusCode.should.equal(statusCode);
           var body = response.body;
           body.status.should.equal(1);
