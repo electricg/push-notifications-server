@@ -41,7 +41,7 @@ module.exports.handler = function(request, reply) {
     var userAgent = request.headers['user-agent'];
     var insert = {
       msg: msg,
-      title: title || '',
+      title: title,
       ip: ip,
       userAgent: userAgent,
       result: res
@@ -61,8 +61,8 @@ module.exports.handler = function(request, reply) {
 
 module.exports.validate = {
   payload: {
-    key: joi.string().required(),
-    msg: joi.string().required(),
-    title: joi.string()
+    key: joi.string().strict().required(),
+    msg: joi.string().strict().required(),
+    title: joi.string().strict().optional().default('')
   }
 };

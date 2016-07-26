@@ -50,6 +50,6 @@ module.exports.handler = function(request, reply) {
 
 module.exports.validate = {
   params: {
-    id: joi.string().lowercase().length(24).hex().required()
+    id: joi.string().strict().lowercase().length(24).hex().required()
   }
 };
