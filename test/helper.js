@@ -52,7 +52,7 @@ module.exports.badClients = [
 ];
 module.exports.gcmUrl = /(gcm-http.googleapis\.com)|(android\.googleapis\.com)/;
 module.exports.goodId = '57891df47bc6aff129e7fe3b';
-module.exports.badId = 'xxx';
+module.exports.badIds = ['aaa', '57891df47bc6aff129e7fe3x'];
 module.exports.goodIp = 'yyy';
 module.exports.goodUserAgent = 'zzz';
 

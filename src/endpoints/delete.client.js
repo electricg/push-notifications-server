@@ -6,11 +6,6 @@ var collection = require('../collections/clients');
 
 module.exports.handler = function(request, reply) {
   var id = request.params.id;
-  var _id = collection.isValidId(id);
-  if (!_id) {
-    return reply(utils.formatError('Not Found')).code(404);
-  }
-  
   var auth = request.headers.authorization;
   if (!auth) {
     return reply().code(401);
@@ -31,7 +26,7 @@ module.exports.handler = function(request, reply) {
   var ip = request.headers['x-forwarded-for'] || request.info.remoteAddress;
   var userAgent = request.headers['user-agent'];
   var query = {
-    '_id' : _id,
+    '_id' : id,
     'endpoint': authObj.endpoint,
     'p256dh': authObj.p256dh,
     'auth': authObj.auth
@@ -55,6 +50,6 @@ module.exports.handler = function(request, reply) {
 
 module.exports.validate = {
   params: {
-    id: joi.string().required() // TODO check length and/or regex
+    id: joi.string().lowercase().length(24).hex().required()
   }
 };

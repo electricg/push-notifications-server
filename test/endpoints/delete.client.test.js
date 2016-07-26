@@ -34,26 +34,29 @@ describe(method + ' ' + endpoint, function() {
   });
 
 
-  it('should fail with an invalid id', function(done) {
-    var id = helper.badId;
-    var options = {
-      method: method,
-      baseUrl: helper.baseUrl,
-      url: endpoint + '/' + id,
-      json: true
-    };
-    var statusCode = 404;
+  helper.badIds.forEach(function(id) {
+    it('should fail with invalid id: ' + id, function(done) {
+      var options = {
+        method: method,
+        baseUrl: helper.baseUrl,
+        url: endpoint + '/' + id,
+        json: true
+      };
+      var statusCode = 400;
 
-    request(options, function(err, response) {
-      if (err) {
-        done(err);
-      }
-      else {
-        var body = response.body;
-        response.statusCode.should.equal(statusCode);
-        body.error.should.equal('Not Found');
-        done();
-      }
+      request(options, function(err, response) {
+        if (err) {
+          done(err);
+        }
+        else {
+          response.statusCode.should.equal(statusCode);
+          var body = response.body;
+          body.error.should.equal('Bad Request');
+          should.exist(body.validation);
+          body.validation.keys.indexOf('id').should.not.equal(-1);
+          done();
+        }
+      });
     });
   });
 
