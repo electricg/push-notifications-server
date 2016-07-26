@@ -268,9 +268,9 @@ describe(method + ' ' + endpoint, function() {
   });
 
 
-  it('should fail and return 400 because of invalid endpoint', function(done) {
+  it('should fail and return 400 because of invalid endpoint scheme', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
-    payload.endpoint = 'xxx';
+    payload.endpoint = 'http://android.googleapis.com';
 
     var options = {
       method: method,
@@ -287,10 +287,10 @@ describe(method + ' ' + endpoint, function() {
       }
       else {
         var body = response.body;
+        body.error.should.equal('Bad Request');
+        should.exist(body.validation);
+        body.validation.keys.indexOf('endpoint').should.not.equal(-1);
         response.statusCode.should.equal(statusCode);
-        body.status.should.equal(0);
-        body.error.should.equal('Error registering subscription to GCM');
-        body.details.should.equal('Invalid URI "' + payload.endpoint + '"');
         done();
       }
     });

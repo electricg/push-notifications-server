@@ -40,10 +40,10 @@ module.exports.handler = function(request, reply) {
 
 module.exports.validate = {
   payload: {
-    endpoint: joi.string().required(), // TODO check length and/or regex
+    endpoint: joi.string().uri({ scheme: 'https' }).required(), // TODO check length and/or regex
     keys: {
-      auth: joi.string().required(), // TODO check length and/or regex
-      p256dh: joi.string().required() // TODO check length and/or regex
+      auth: joi.string().regex(/^[a-zA-Z0-9_=-]+$/).required(),
+      p256dh: joi.string().regex(/^[a-zA-Z0-9_=-]+$/).required()
     }
   }
 };
