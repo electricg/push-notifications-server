@@ -1,5 +1,5 @@
 var Promise = require('bluebird');
-var webpush = require('web-push-encryption');
+var webpush = require('web-push');
 var config = require('./config');
 
 
@@ -14,11 +14,12 @@ var sendPush = function(subscription, msg, title) {
     message.t = title;
   }
   message = JSON.stringify(message);
-  try {
-    return webpush.sendWebPush(message, subscription);
-  } catch(e) {
-    return Promise.reject(e);
-  }
+  var params = {
+    payload: message,
+    userPublicKey: subscription.keys.p256dh,
+    userAuth: subscription.keys.auth
+  };
+  return webpush.sendNotification(subscription.endpoint, params);
 };
 
 // Send push with welcome message when subscribtion data arrives

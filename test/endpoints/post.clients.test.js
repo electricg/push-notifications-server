@@ -319,7 +319,7 @@ describe(method + ' ' + endpoint, function() {
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(0);
         body.error.should.equal('Error registering subscription to GCM');
-        body.details.should.equal('Subscription\'s client key (p256dh) is invalid.');
+        body.details.should.equal('userPublicKey should be 65 bytes long.');
         done();
       }
     });
@@ -348,7 +348,7 @@ describe(method + ' ' + endpoint, function() {
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(0);
         body.error.should.equal('Error registering subscription to GCM');
-        body.details.should.equal('Subscription\'s Auth token is not 16 bytes.');
+        body.details.should.equal('userAuth should be at least 16 bytes long');
         done();
       }
     });
@@ -417,7 +417,7 @@ describe(method + ' ' + endpoint, function() {
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(0);
         body.error.should.equal('Error registering subscription to GCM');
-        body.details.should.equal('Subscription\'s client key (p256dh) is invalid.');
+        body.details.should.equal('userPublicKey should be 65 bytes long.');
         done();
       }
     });
