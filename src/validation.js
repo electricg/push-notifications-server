@@ -6,6 +6,10 @@ var regex = {
   p256dh: new RegExp(/^[a-zA-Z0-9_=-]+$/),
   authHeader: new RegExp('^' + config.get('authHeader'))
 };
+var max = {
+  msg: 120,
+  title: 50
+};
 
 var customJoi = joi.extend({
   base: joi.string(),
@@ -61,8 +65,8 @@ var singleValidates = {
   clientId: joi.string().strict().lowercase().length(24).hex().required(),
   push: {
     key: joi.string().strict().required(),
-    msg: joi.string().strict().required(),
-    title: joi.string().strict().default('').optional()
+    msg: joi.string().strict().max(max.msg).required(),
+    title: joi.string().strict().max(max.title).default('').optional()
   },
   headers: joi.object({
     'authorization': authHeader

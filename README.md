@@ -8,4 +8,10 @@ Start mongodb on my mac: `mongod --config /usr/local/etc/mongod.conf`
 
 * [ ] if send push returns an error (check which one), unsubscribe client from db
 * [ ] use library (jsesc?) to parse/clean/sanitize/check msg and title in POST /special
-* [ ] limit msg and title length in POST /special
+* [X] limit msg and title length in POST /special
+* [X] check that title is optional
+* [ ] msg and title counter in GET /special
+
+###Links
+
+* http://stackoverflow.com/a/11420667/471720

@@ -2,11 +2,15 @@
 var Promise = require('bluebird');
 var nock = require('nock');
 var request = require('request');
+var rewire = require('rewire');
 var should = require('should');
 var sinon = require('sinon');
 var _ = require('lodash');
 var helper = require('../helper');
 var collection = require('../../src/collections/clients');
+
+var validation = rewire('../../src/validation');
+var max = validation.__get__('max');
 
 var endpoint = '/' + helper.config.get('privatePath');
 var method = 'POST';
@@ -216,6 +220,70 @@ describe(method + ' ' + endpoint, function() {
         body.error.should.equal('Bad Request');
         should.exist(body.validation);
         body.validation.keys.indexOf('title').should.not.equal(-1);
+        done();
+      }
+    });
+  });
+
+
+  it('should fail because of too long title value in payload', function(done) {
+    var payload = {
+      key: 'xxx',
+      msg: 'xxx',
+      title: new Array(max.title + 2).join('x')
+    };
+
+    var options = {
+      method: method,
+      baseUrl: helper.baseUrl,
+      url: endpoint,
+      json: true,
+      body: payload
+    };
+    var statusCode = 400;
+
+    request(options, function(err, response) {
+      if (err) {
+        done(err);
+      }
+      else {
+        var body = response.body;
+        response.statusCode.should.equal(statusCode);
+        body.error.should.equal('Bad Request');
+        should.exist(body.validation);
+        body.validation.keys.indexOf('title').should.not.equal(-1);
+        done();
+      }
+    });
+  });
+
+
+  it('should fail because of too long msg value in payload', function(done) {
+    var payload = {
+      key: 'xxx',
+      msg: new Array(max.msg + 2).join('x'),
+      title: 'xxx'
+    };
+
+    var options = {
+      method: method,
+      baseUrl: helper.baseUrl,
+      url: endpoint,
+      json: true,
+      body: payload
+    };
+    var statusCode = 400;
+
+    request(options, function(err, response) {
+      if (err) {
+        done(err);
+      }
+      else {
+        var body = response.body;
+        response.statusCode.should.equal(statusCode);
+        body.error.should.equal('Bad Request');
+        should.exist(body.validation);
+        body.validation.keys.indexOf('msg').should.not.equal(-1);
         done();
       }
     });
