@@ -22,22 +22,20 @@ nconf
   .defaults(DEFAULT)
 ;
 
-nconf.set('port', ~~nconf.get('PORT'));
-nconf.set('host', nconf.get('HOST'));
-nconf.set('mongodbUrl', nconf.get('MONGODB_URI'));
-nconf.set('allowedOrigins', utils.formatOrigins(nconf.get('CLIENTS')));
-nconf.set('privateAuth', nconf.get('PRIVATE_AUTH'));
-nconf.set('privatePath', nconf.get('PRIVATE_PATH'));
-nconf.set('gcmAuth', nconf.get('GCM_AUTH'));
-nconf.set('collectionClients', nconf.get('COLLECTION_CLIENTS'));
-nconf.set('collectionMessages', nconf.get('COLLECTION_MESSAGES'));
-nconf.set('welcomeMsg', nconf.get('WELCOME_MSG'));
-nconf.set('publicList', nconf.get('PUBLIC_LIST') === 'true' || nconf.get('PUBLIC_LIST') === true);
-nconf.set('authHeader', nconf.get('AUTH_HEADER'));
+// some of the settings need parsing, so we create a public layer accessible to the application, while hiding the original ones
+nconf.set('public:port', ~~nconf.get('PORT'));
+nconf.set('public:host', nconf.get('HOST'));
+nconf.set('public:mongodbUrl', nconf.get('MONGODB_URI'));
+nconf.set('public:allowedOrigins', utils.formatOrigins(nconf.get('CLIENTS')));
+nconf.set('public:privateAuth', nconf.get('PRIVATE_AUTH'));
+nconf.set('public:privatePath', nconf.get('PRIVATE_PATH'));
+nconf.set('public:gcmAuth', nconf.get('GCM_AUTH'));
+nconf.set('public:collectionClients', nconf.get('COLLECTION_CLIENTS'));
+nconf.set('public:collectionMessages', nconf.get('COLLECTION_MESSAGES'));
+nconf.set('public:welcomeMsg', nconf.get('WELCOME_MSG'));
+nconf.set('public:publicList', nconf.get('PUBLIC_LIST') === 'true' || nconf.get('PUBLIC_LIST') === true);
+nconf.set('public:authHeader', nconf.get('AUTH_HEADER'));
 
 module.exports.get = function(param) {
-  var arr = ['port', 'host', 'mongodbUrl', 'allowedOrigins', 'privateAuth', 'privatePath', 'gcmAuth', 'collectionClients', 'collectionMessages', 'welcomeMsg', 'publicList', 'authHeader'];
-  if (arr.indexOf(param) !== -1) {
-    return nconf.get(param);
-  }
+  return nconf.get('public:' + param);
 };
