@@ -13,7 +13,7 @@
     "posttest": "./node_modules/.bin/istanbul check-coverage --statements 100 --functions 100 --branches 100 --lines 100"
   },
   "engines": {
-    "node": "5"
+    "node": "5.12.0"
   },
   "author": "Giulia Alfonsi",
   "license": "MIT",
