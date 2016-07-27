@@ -42,9 +42,9 @@ module.exports.sendPushes = function(subscriptions, msg, title) {
     .catch(function(err) {
       e++;
       //TODO is this the correct check?
-      if (err.statusCode === 400) {
-        d.push(subscription);
-      }
+      // if (err.statusCode === 400) {
+      d.push(subscription);
+      // }
       return Promise.reject(err);
     });
   })

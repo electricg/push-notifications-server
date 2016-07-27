@@ -10,7 +10,7 @@ Start mongodb on my mac: `mongod --config /usr/local/etc/mongod.conf`
 * [ ] use library (jsesc?) to parse/clean/sanitize/check msg and title in POST /special
 * [X] limit msg and title length in POST /special
 * [X] check that title is optional
-* [ ] msg and title counter in GET /special
+* [X] msg and title counter in GET /special
 
 ###Links
 
