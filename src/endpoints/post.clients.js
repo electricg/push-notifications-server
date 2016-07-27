@@ -1,6 +1,6 @@
 // Add subscription
-var joi = require('joi');
 var utils = require('../utils');
+var validation = require('../validation');
 var webpush = require('../webpush');
 var collection = require('../collections/clients');
 
@@ -40,10 +40,10 @@ module.exports.handler = function(request, reply) {
 
 module.exports.validate = {
   payload: {
-    endpoint: joi.string().strict().uri({ scheme: 'https' }).required(), // TODO check length and/or regex
+    endpoint: validation.subscription.endpoint,
     keys: {
-      auth: joi.string().strict().regex(/^[a-zA-Z0-9_=-]+$/).required(),
-      p256dh: joi.string().strict().regex(/^[a-zA-Z0-9_=-]+$/).required()
+      auth: validation.subscription.auth,
+      p256dh: validation.subscription.p256dh
     }
   }
 };

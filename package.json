@@ -24,7 +24,7 @@
   "dependencies": {
     "bluebird": "^3.4.1",
     "hapi": "^13.5.0",
-    "joi": "^9.0.0",
+    "joi": "^9.0.4",
     "mongoose": "^4.5.4",
     "nconf": "^0.8.4",
     "web-push-encryption": "^2.0.0"

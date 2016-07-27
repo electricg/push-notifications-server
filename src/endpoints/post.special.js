@@ -1,7 +1,7 @@
 // Send message to all subscriptions
-var joi = require('joi');
 var config = require('../config');
 var utils = require('../utils');
+var validation = require('../validation');
 var webpush = require('../webpush');
 var collectionClients = require('../collections/clients');
 var collectionMessages = require('../collections/messages');
@@ -61,8 +61,8 @@ module.exports.handler = function(request, reply) {
 
 module.exports.validate = {
   payload: {
-    key: joi.string().strict().required(),
-    msg: joi.string().strict().required(),
-    title: joi.string().strict().optional().default('')
+    key: validation.push.key,
+    msg: validation.push.msg,
+    title: validation.push.title
   }
 };

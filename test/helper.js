@@ -18,7 +18,7 @@ module.exports.collectionMessages = db.db.collection(config.get('collectionMessa
 
 module.exports.baseUrl = 'http://' + config.get('host') + ':' + config.get('port');
 
-module.exports.goodClients = [
+var goodClients = [
   {
     'endpoint' : 'https://android.googleapis.com/gcm/send/dcqAlHtjC84:APA91bHj7Qp1d-ZPy83313ohQaE_CSeSvczh-3Qfj1dyzkAV_K3FTSfqXH2LmS_AF9uv1TmcAneMH2MHSeqRHxo9QfoblfYODySeV_2L1kV0pEhEBbBHhXokOzVAZyvGGpT0K07rAPqc',
     'keys' : {
@@ -41,6 +41,7 @@ module.exports.goodClients = [
     }
   }
 ];
+module.exports.goodClients = goodClients;
 module.exports.badClients = [
   {
     'endpoint' : 'https://android.googleapis.com/gcm/send/dcqAlHtjC84:APA91bHj7Qp1d-ZPy83313ohQaE_CSeSvczh-3Qfj1dyzkAV_K3FTSfqXH2LmS_AF9uv1TmcAneMH2MHSeqRHxo9QfoblfYODySeV_2L1kV0pEhEBbBHhXokOzVAZyvGGpT0K07rAPqx',
@@ -55,6 +56,7 @@ module.exports.goodId = '57891df47bc6aff129e7fe3b';
 module.exports.badIds = ['aaa', '57891df47bc6aff129e7fe3x'];
 module.exports.goodIp = 'yyy';
 module.exports.goodUserAgent = 'zzz';
+module.exports.goodHeaderAuthorization = config.get('authHeader') + 'endpoint=' + goodClients[0].endpoint + ',p256dh=' + goodClients[0].keys.p256dh + ',auth=' + goodClients[0].keys.auth;
 
 
 before(function(done) {

@@ -36,11 +36,13 @@ describe(method + ' ' + endpoint, function() {
 
   helper.badIds.forEach(function(id) {
     it('should fail with invalid id: ' + id, function(done) {
+      var headers = { 'Authorization': helper.goodHeaderAuthorization };
       var options = {
         method: method,
         baseUrl: helper.baseUrl,
         url: endpoint + '/' + id,
-        json: true
+        json: true,
+        headers: headers
       };
       var statusCode = 400;
 
@@ -69,7 +71,7 @@ describe(method + ' ' + endpoint, function() {
       url: endpoint + '/' + id,
       json: true
     };
-    var statusCode = 401;
+    var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
@@ -77,6 +79,10 @@ describe(method + ' ' + endpoint, function() {
       }
       else {
         response.statusCode.should.equal(statusCode);
+        var body = response.body;
+        body.error.should.equal('Bad Request');
+        should.exist(body.validation);
+        body.validation.keys.indexOf('authorization').should.not.equal(-1);
         done();
       }
     });
@@ -93,7 +99,7 @@ describe(method + ' ' + endpoint, function() {
       json: true,
       headers: headers
     };
-    var statusCode = 401;
+    var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
@@ -101,6 +107,10 @@ describe(method + ' ' + endpoint, function() {
       }
       else {
         response.statusCode.should.equal(statusCode);
+        var body = response.body;
+        body.error.should.equal('Bad Request');
+        should.exist(body.validation);
+        body.validation.keys.indexOf('authorization').should.not.equal(-1);
         done();
       }
     });
@@ -117,7 +127,7 @@ describe(method + ' ' + endpoint, function() {
       json: true,
       headers: headers
     };
-    var statusCode = 404;
+    var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
@@ -125,8 +135,6 @@ describe(method + ' ' + endpoint, function() {
       }
       else {
         response.statusCode.should.equal(statusCode);
-        var body = response.body;
-        body.error.should.equal('Not Found');
         done();
       }
     });
@@ -246,7 +254,7 @@ describe(method + ' ' + endpoint, function() {
 
   it('should fail and return 500 because of a problem with the db', function(done) {
     var id = helper.goodId;
-    var headers = { 'Authorization': helper.config.get('authHeader') };
+    var headers = { 'Authorization': helper.goodHeaderAuthorization };
     var options = {
       method: method,
       baseUrl: helper.baseUrl,
@@ -279,7 +287,7 @@ describe(method + ' ' + endpoint, function() {
 
   it('should fail and return 500 because of a problem with updating the data in the db', function(done) {
     var id = helper.goodId;
-    var headers = { 'Authorization': helper.config.get('authHeader') };
+    var headers = { 'Authorization': helper.goodHeaderAuthorization };
     var options = {
       method: method,
       baseUrl: helper.baseUrl,
