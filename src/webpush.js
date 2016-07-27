@@ -31,6 +31,7 @@ module.exports.checkSubscribtion = function(subscription) {
 module.exports.sendPushes = function(subscriptions, msg, title) {
   var e = 0;
   var r = 0;
+  var d = [];
   return Promise.map(subscriptions, function(subscription) {
     return sendPush(subscription, msg, title)
     .then(function(res) {
@@ -38,15 +39,18 @@ module.exports.sendPushes = function(subscriptions, msg, title) {
       return res;
     })
     .catch(function(err) {
-      console.log('err', err);
       e++;
+      //TODO is this the correct check?
+      if (err.statusCode === 400) {
+        d.push(subscription);
+      }
       return Promise.reject(err);
     });
   })
   .then(function() {
-    return { e: e, r: r };
+    return { e: e, r: r, d: d };
   })
   .catch(function() {
-    return Promise.reject({ e: e, r: r });
+    return Promise.reject({ e: e, r: r, d: d });
   });
 };

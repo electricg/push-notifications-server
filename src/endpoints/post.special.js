@@ -20,15 +20,18 @@ module.exports.handler = function(request, reply) {
     endpoint: true,
     keys: true
   };
+  var toBeRemoved = [];
   collectionClients.list(query, projection)
   .then(function(doc) {
     if (doc.length) {
       return webpush.sendPushes(doc, msg, title)
       .then(function(res) {
+        toBeRemoved = res.d;
         return { status: 1, failed: res.e, succeeded: res.r };
       })
       .catch(function(err) {
-        // not returning an HTTP error status code because it could be a mixture of good and bad pushes 
+        // not returning an HTTP error status code because it could be a mixture of good and bad pushes
+        toBeRemoved = err.d;
         return { status: 0, failed: err.e, succeeded: err.r };
       });
     }
@@ -47,6 +50,9 @@ module.exports.handler = function(request, reply) {
       result: res
     };
     return collectionMessages.add(insert)
+    .then(function() {
+      return collectionClients.removeInvalid(toBeRemoved);
+    })
     .catch(function(err) {
       res.err = utils.formatError('Internal MongoDB error', err);
     })

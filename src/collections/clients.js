@@ -6,7 +6,7 @@ var collection = db.db.collection(config.get('collectionClients'));
 module.exports.remove = function(query, update) {
   return new Promise(function(resolve, reject) {
     var _query = {
-      '_id' : db.ObjectId(query._id),
+      '_id': db.ObjectId(query._id),
       'endpoint': query.endpoint,
       'keys.p256dh': query.p256dh,
       'keys.auth': query.auth
@@ -36,6 +36,27 @@ module.exports.remove = function(query, update) {
     .catch(function(err) {
       reject(err);
     });
+  });
+};
+
+
+module.exports.removeInvalid = function(arr) {
+  return Promise.map(arr, function(query) {
+    var _update = {
+      '$set': {
+        status: false,
+        unsubscribed: {
+          date: new Date(),
+          ip: '',
+          userAgent: ''
+        }
+      }
+    };
+    var _options = {
+      upsert: false,
+      multi: false
+    };
+    return collection.update(query, _update, _options);
   });
 };
 
