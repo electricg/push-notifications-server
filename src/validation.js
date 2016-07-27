@@ -1,5 +1,4 @@
 var joi = require('joi');
-var _ = require('lodash');
 var config = require('./config');
 
 var regex = {
@@ -38,7 +37,7 @@ var customJoi = joi.extend({
 
       var res = {};
       var tmp;
-      var par = _.keys(singleValidates.subscription);
+      var par = Object.keys(singleValidates.subscription);
       for (var i = 0; i < par.length; i++) {
         tmp = joi.validate(obj[par[i]], singleValidates.subscription[par[i]]);
         if (tmp.error) {
