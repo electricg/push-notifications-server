@@ -56,6 +56,10 @@ input[type=submit] {
   margin-top: 1em;
   width: 100%;
 }
+.counter {
+  text-align: right;
+  width: 2em;
+}
 output {
   background: #FFF;
   border: 1px dashed #333;
@@ -79,11 +83,13 @@ output {
   </div>
   <div>
     <label for="title">Title</label>
-    <input type="text" id="title" autocomplete="off">
+    <input type="text" id="title" maxlength="50" autocomplete="off">
+    <span id="title-length" class="counter"></span>
   </div>
   <div>
     <label for="msg">Message <abbr title="required">*</abbr></label>
-    <input type="text" id="msg" required autocomplete="off">
+    <input type="text" id="msg" maxlength="120" required autocomplete="off">
+    <span id="msg-length" class="counter"></span>
   </div>
   <div>
     <input type="submit" value="Send">
@@ -142,11 +148,29 @@ function sendPost(opt) {
   });
 }
 
+function checkTitleLength() {
+  var len = $title.value.length;
+  $titleLength.innerHTML = titleMax - len;
+}
+function checkMsgLength() {
+  var len = $msg.value.length;
+  $msgLength.innerHTML = msgMax - len;
+}
+
 var $form = $$('#form');
 var $key = $$('#key');
 var $title = $$('#title');
 var $msg = $$('#msg');
 var $output = $$('#output');
+var $titleLength = $$('#title-length');
+var titleMax = $title.getAttribute('maxlength');
+var $msgLength = $$('#msg-length');
+var msgMax = $msg.getAttribute('maxlength');
+
+checkTitleLength();
+checkMsgLength();
+$title.addEventListener('keyup', checkTitleLength);
+$msg.addEventListener('keyup', checkMsgLength);
 
 $form.addEventListener('submit', function(event) {
   prev(event);
