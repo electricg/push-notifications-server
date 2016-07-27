@@ -6,9 +6,9 @@ var collection = require('../collections/clients');
 module.exports.handler = function(request, reply) {
   var id = request.params.id;
   var authObj = request.headers.authorization;
-
   var ip = request.headers['x-forwarded-for'] || request.info.remoteAddress;
   var userAgent = request.headers['user-agent'];
+  
   var query = {
     '_id' : id,
     'endpoint': authObj.endpoint,

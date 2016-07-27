@@ -66,7 +66,6 @@ var singleValidates = {
     title: joi.string().strict().default('').optional()
   },
   headers: joi.object({
-    // 'authorization': joi.string().strict().regex(regex.authHeader).required()
     'authorization': authHeader
   }).options({ allowUnknown: true })
 };
