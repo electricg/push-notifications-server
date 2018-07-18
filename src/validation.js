@@ -59,6 +59,7 @@ var authHeader = customJoi.auth().scheme().params().required();
 var singleValidates = {
   subscription: {
     endpoint: joi.string().strict().uri({ scheme: 'https' }).required(),
+    expirationTime: joi.any().optional(),
     auth: joi.string().strict().regex(regex.auth).required(),
     p256dh: joi.string().strict().regex(regex.p256dh).required()
   },

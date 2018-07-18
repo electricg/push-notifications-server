@@ -41,6 +41,7 @@ module.exports.handler = function(request, reply) {
 module.exports.validate = {
   payload: {
     endpoint: validation.subscription.endpoint,
+    expirationTime: validation.subscription.expirationTime,
     keys: {
       auth: validation.subscription.auth,
       p256dh: validation.subscription.p256dh
