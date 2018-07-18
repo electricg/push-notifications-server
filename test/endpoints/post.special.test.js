@@ -312,13 +312,15 @@ describe(`${method} ${endpoint}`, function() {
     };
     var statusCode = 500;
 
-    var revert = sinon.stub(helper.collectionClients, 'find', function() {
-      return {
-        toArray: function() {
-          return Promise.reject(new Error('fake db error'));
-        },
-      };
-    });
+    var revert = sinon
+      .stub(helper.collectionClients, 'find')
+      .callsFake(function() {
+        return {
+          toArray: function() {
+            return Promise.reject(new Error('fake db error'));
+          },
+        };
+      });
 
     request(options, function(err, response) {
       revert.restore();
@@ -350,9 +352,11 @@ describe(`${method} ${endpoint}`, function() {
     };
     var statusCode = 200;
 
-    var revert = sinon.stub(helper.collectionMessages, 'insert', function() {
-      return Promise.reject(new Error('fake db error'));
-    });
+    var revert = sinon
+      .stub(helper.collectionMessages, 'insert')
+      .callsFake(function() {
+        return Promise.reject(new Error('fake db error'));
+      });
 
     request(options, function(err, response) {
       revert.restore();
@@ -385,13 +389,15 @@ describe(`${method} ${endpoint}`, function() {
     };
     var statusCode = 200;
 
-    var revert = sinon.stub(helper.collectionMessages, 'insert', function() {
-      return Promise.resolve({
-        result: {
-          ok: 0,
-        },
+    var revert = sinon
+      .stub(helper.collectionMessages, 'insert')
+      .callsFake(function() {
+        return Promise.resolve({
+          result: {
+            ok: 0,
+          },
+        });
       });
-    });
 
     request(options, function(err, response) {
       revert.restore();

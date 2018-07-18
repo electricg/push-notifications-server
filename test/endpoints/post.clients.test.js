@@ -595,9 +595,11 @@ describe(`${method} ${endpoint}`, function() {
       .post('/xxx')
       .reply(201);
 
-    var revert = sinon.stub(helper.collectionClients, 'insert', function() {
-      return Promise.reject(new Error('fake db error'));
-    });
+    var revert = sinon
+      .stub(helper.collectionClients, 'insert')
+      .callsFake(function() {
+        return Promise.reject(new Error('fake db error'));
+      });
 
     request(options, function(err, response) {
       revert.restore();
@@ -634,13 +636,15 @@ describe(`${method} ${endpoint}`, function() {
       .post('/xxx')
       .reply(201);
 
-    var revert = sinon.stub(helper.collectionClients, 'insert', function() {
-      return Promise.resolve({
-        result: {
-          ok: 0,
-        },
+    var revert = sinon
+      .stub(helper.collectionClients, 'insert')
+      .callsFake(function() {
+        return Promise.resolve({
+          result: {
+            ok: 0,
+          },
+        });
       });
-    });
 
     request(options, function(err, response) {
       revert.restore();

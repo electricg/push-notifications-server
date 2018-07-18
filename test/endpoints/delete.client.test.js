@@ -257,9 +257,11 @@ describe(`${method} ${endpoint}`, function() {
     };
     var statusCode = 500;
 
-    var revert = sinon.stub(helper.collectionClients, 'update', function() {
-      return Promise.reject(new Error('fake db error'));
-    });
+    var revert = sinon
+      .stub(helper.collectionClients, 'update')
+      .callsFake(function() {
+        return Promise.reject(new Error('fake db error'));
+      });
 
     request(options, function(err, response) {
       revert.restore();
@@ -288,13 +290,15 @@ describe(`${method} ${endpoint}`, function() {
     };
     var statusCode = 404;
 
-    var revert = sinon.stub(helper.collectionClients, 'update', function() {
-      return Promise.resolve({
-        result: {
-          ok: 0,
-        },
+    var revert = sinon
+      .stub(helper.collectionClients, 'update')
+      .callsFake(function() {
+        return Promise.resolve({
+          result: {
+            ok: 0,
+          },
+        });
       });
-    });
 
     request(options, function(err, response) {
       revert.restore();

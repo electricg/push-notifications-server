@@ -23,13 +23,15 @@ describe(`${method} ${endpoint} enabled`, function() {
   });
 
   it('should fail and return 500 because of a problem with the db', function(done) {
-    var revert = sinon.stub(helper.collectionClients, 'find', function() {
-      return {
-        toArray: function() {
-          return Promise.reject(new Error('fake db error'));
-        },
-      };
-    });
+    var revert = sinon
+      .stub(helper.collectionClients, 'find')
+      .callsFake(function() {
+        return {
+          toArray: function() {
+            return Promise.reject(new Error('fake db error'));
+          },
+        };
+      });
 
     var options = {
       method: method,
