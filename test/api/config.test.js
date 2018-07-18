@@ -8,7 +8,6 @@ describe('Config', function() {
     done();
   });
 
-
   it('should return undefined for an invalid setting', function(done) {
     var c = config.get('xxx');
     (typeof c).should.equal('undefined');

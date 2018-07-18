@@ -3,22 +3,26 @@ var bluebird = require('bluebird');
 var config = require('./config');
 
 var connect = function(cb) {
-  Mongoose.connect(config.get('mongodbUrl'), {
-    promiseLibrary: bluebird,
-    server: {
-      'auto_reconnect': true,
-      socketOptions: {
-        connectTimeoutMS: 3600000,
-        keepAlive: 3600000,
-        socketTimeoutMS: 3600000
+  Mongoose.connect(
+    config.get('mongodbUrl'),
+    {
+      promiseLibrary: bluebird,
+      server: {
+        auto_reconnect: true,
+        socketOptions: {
+          connectTimeoutMS: 3600000,
+          keepAlive: 3600000,
+          socketTimeoutMS: 3600000,
+        },
+      },
+    },
+    function(err) {
+      if (err) {
+        console.log('Error', err);
       }
+      cb();
     }
-  }, function(err) {
-    if (err) {
-      console.log('Error', err);
-    }
-    cb();
-  });
+  );
 };
 module.exports.connect = connect;
 var db = Mongoose.connection;
@@ -37,7 +41,7 @@ db.on('connected', function() {
   console.log('Connection established to MongoDB');
 });
 db.on('error', function(err) {
-  console.log('Error', err.name + ': ' + err.message);
+  console.log('Error', `${err.name}: ${err.message}`);
 });
 db.on('disconnected', function() {
   console.log('Error', 'Lost MongoDB connection');

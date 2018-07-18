@@ -12,24 +12,23 @@ var collection = require('../../src/collections/clients');
 var validation = rewire('../../src/validation');
 var max = validation.__get__('max');
 
-var endpoint = '/' + helper.config.get('privatePath');
+var endpoint = `/${helper.config.get('privatePath')}`;
 var method = 'POST';
 
-describe(method + ' ' + endpoint, function() {
+describe(`${method} ${endpoint}`, function() {
   it('should fail with an empty body', function(done) {
     var options = {
       method: method,
       baseUrl: helper.baseUrl,
       url: endpoint,
-      json: true
+      json: true,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -39,10 +38,9 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should fail because of no key value in payload', function(done) {
     var payload = {
-      msg: 'xxx'
+      msg: 'xxx',
     };
 
     var options = {
@@ -50,15 +48,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -69,10 +66,9 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should fail because of no msg value in payload', function(done) {
     var payload = {
-      key: 'xxx'
+      key: 'xxx',
     };
 
     var options = {
@@ -80,15 +76,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -99,12 +94,11 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should fail because of additional value in payload not expected', function(done) {
     var payload = {
       key: 'xxx',
       msg: 'xxx',
-      fakeParam: 'xxx'
+      fakeParam: 'xxx',
     };
 
     var options = {
@@ -112,15 +106,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -131,11 +124,10 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should fail because of not string key value in payload', function(done) {
     var payload = {
       key: 1,
-      msg: 'xxx'
+      msg: 'xxx',
     };
 
     var options = {
@@ -143,15 +135,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -162,11 +153,10 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should fail because of not string msg value in payload', function(done) {
     var payload = {
       key: 'xxx',
-      msg: 1
+      msg: 1,
     };
 
     var options = {
@@ -174,15 +164,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -192,13 +181,12 @@ describe(method + ' ' + endpoint, function() {
       }
     });
   });
-
 
   it('should fail because of not string title value in payload', function(done) {
     var payload = {
       key: 'xxx',
       msg: 'xxx',
-      title: 1
+      title: 1,
     };
 
     var options = {
@@ -206,15 +194,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -224,13 +211,12 @@ describe(method + ' ' + endpoint, function() {
       }
     });
   });
-
 
   it('should fail because of too long title value in payload', function(done) {
     var payload = {
       key: 'xxx',
       msg: 'xxx',
-      title: new Array(max.title + 2).join('x')
+      title: new Array(max.title + 2).join('x'),
     };
 
     var options = {
@@ -238,15 +224,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -257,12 +242,11 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should fail because of too long msg value in payload', function(done) {
     var payload = {
       key: 'xxx',
       msg: new Array(max.msg + 2).join('x'),
-      title: 'xxx'
+      title: 'xxx',
     };
 
     var options = {
@@ -270,15 +254,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -289,11 +272,10 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should fail and return 401 because of not valid key', function(done) {
     var payload = {
-      key: helper.config.get('privateAuth') + 'x',
-      msg: 'xxx'
+      key: `${helper.config.get('privateAuth')}x`,
+      msg: 'xxx',
     };
 
     var options = {
@@ -301,26 +283,24 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 401;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         response.statusCode.should.equal(statusCode);
         done();
       }
     });
   });
 
-
   it('should fail and return 500 because of a problem with the db in the clients collection', function(done) {
     var payload = {
       key: helper.config.get('privateAuth'),
-      msg: 'xxx'
+      msg: 'xxx',
     };
 
     var options = {
@@ -328,7 +308,7 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 500;
 
@@ -336,7 +316,7 @@ describe(method + ' ' + endpoint, function() {
       return {
         toArray: function() {
           return Promise.reject(new Error('fake db error'));
-        }
+        },
       };
     });
 
@@ -344,8 +324,7 @@ describe(method + ' ' + endpoint, function() {
       revert.restore();
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(0);
@@ -356,11 +335,10 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should succeed and return 200 but with a problem with the db in the messages collection', function(done) {
     var payload = {
       key: helper.config.get('privateAuth'),
-      msg: 'xxx'
+      msg: 'xxx',
     };
 
     var options = {
@@ -368,7 +346,7 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 200;
 
@@ -380,8 +358,7 @@ describe(method + ' ' + endpoint, function() {
       revert.restore();
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(0);
@@ -393,11 +370,10 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should succed and return 200 but with a problem adding the log in the messages collection', function(done) {
     var payload = {
       key: helper.config.get('privateAuth'),
-      msg: 'xxx'
+      msg: 'xxx',
     };
 
     var options = {
@@ -405,15 +381,15 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 200;
 
     var revert = sinon.stub(helper.collectionMessages, 'insert', function() {
       return Promise.resolve({
         result: {
-          ok: 0
-        }
+          ok: 0,
+        },
       });
     });
 
@@ -421,8 +397,7 @@ describe(method + ' ' + endpoint, function() {
       revert.restore();
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(0);
@@ -434,11 +409,10 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should succeed with no clients registered', function(done) {
     var payload = {
       key: helper.config.get('privateAuth'),
-      msg: 'xxx'
+      msg: 'xxx',
     };
 
     var options = {
@@ -446,172 +420,27 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 200;
 
     options.headers = {
       'User-Agent': helper.goodUserAgent,
-      'X-Forwarded-For': helper.goodIp
+      'X-Forwarded-For': helper.goodIp,
     };
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(0);
         body.message.should.equal('No keys registered');
-        
-        helper.collectionMessages.find().toArray()
-        .then(function(res) {
-          res.length.should.equal(1);
-          res[0].msg.should.equal(payload.msg);
-          res[0].title.should.equal('');
-          (typeof res[0].date).should.equal('object');
-          res[0].ip.should.equal(helper.goodIp);
-          res[0].userAgent.should.equal(helper.goodUserAgent);
-          res[0].result.status.should.equal(0);
-          res[0].result.message.should.equal('No keys registered');
-          done();
-        })
-        .catch(done);
-      }
-    });
-  });
 
-
-  it('should succeed with all clients succeeding', function(done) {
-    var payload = {
-      key: helper.config.get('privateAuth'),
-      msg: 'xxx',
-      title: 'yyy'
-    };
-
-    var options = {
-      method: method,
-      baseUrl: helper.baseUrl,
-      url: endpoint,
-      json: true,
-      body: payload
-    };
-    var statusCode = 200;
-
-    options.headers = {
-      'User-Agent': helper.goodUserAgent,
-      'X-Forwarded-For': helper.goodIp
-    };
-
-    var data = _.cloneDeep(helper.goodClients);
-
-    nock(helper.gcmUrl)
-      // the web-push-encryption module will try to call the actual endpoint url, so we just use nock to redirect any actual called url to our own fake url, which in return will respond again through nock
-      .filteringPath(function() {
-        return '/xxx';
-      })
-      .post('/xxx').times(data.length)
-        .reply(201);
-
-    Promise.map(data, function(item) {
-      return collection.add(item)
-      .catch(done);
-    })
-    .then(function() {
-      request(options, function(err, response) {
-        if (err) {
-          done(err);
-        }
-        else {
-          var body = response.body;
-          response.statusCode.should.equal(statusCode);
-          body.status.should.equal(1);
-          body.succeeded.should.equal(data.length);
-          body.failed.should.equal(0);
-          
-          helper.collectionMessages.find().toArray()
-          .then(function(res) {
-            res.length.should.equal(1);
-            res[0].msg.should.equal(payload.msg);
-            res[0].title.should.equal(payload.title);
-            (typeof res[0].date).should.equal('object');
-            res[0].ip.should.equal(helper.goodIp);
-            res[0].userAgent.should.equal(helper.goodUserAgent);
-            res[0].result.status.should.equal(1);
-            res[0].result.succeeded.should.equal(data.length);
-            res[0].result.failed.should.equal(0);
-            done();
-          })
-          .catch(done);
-        }
-      });
-    })
-    .catch(done);
-  });
-
-
-  it('should succeed with active clients succeeding', function(done) {
-    var payload = {
-      key: helper.config.get('privateAuth'),
-      msg: 'xxx'
-    };
-
-    var options = {
-      method: method,
-      baseUrl: helper.baseUrl,
-      url: endpoint,
-      json: true,
-      body: payload
-    };
-    var statusCode = 200;
-
-    options.headers = {
-      'User-Agent': helper.goodUserAgent,
-      'X-Forwarded-For': helper.goodIp
-    };
-
-    var data = _.cloneDeep(helper.goodClients);
-
-    nock(helper.gcmUrl)
-      // the web-push-encryption module will try to call the actual endpoint url, so we just use nock to redirect any actual called url to our own fake url, which in return will respond again through nock
-      .filteringPath(function() {
-        return '/xxx';
-      })
-      .post('/xxx').times(data.length)
-        .reply(201);
-
-    Promise.map(data, function(item) {
-      return collection.add(item)
-      .catch(done);
-    })
-    .then(function(res) {
-      // remove one of the clients
-      var query = {
-        _id: res[0]._id,
-        endpoint: res[0].endpoint,
-        p256dh: res[0].keys.p256dh,
-        auth: res[0].keys.auth
-      };
-      var update = {
-        ip: helper.goodIp,
-        userAgent: helper.goodUserAgent
-      };
-      return collection.remove(query, update);
-    })
-    .then(function() {
-      request(options, function(err, response) {
-        if (err) {
-          done(err);
-        }
-        else {
-          var body = response.body;
-          response.statusCode.should.equal(statusCode);
-          body.status.should.equal(1);
-          body.succeeded.should.equal(2);
-          body.failed.should.equal(0);
-          
-          helper.collectionMessages.find().toArray()
+        helper.collectionMessages
+          .find()
+          .toArray()
           .then(function(res) {
             res.length.should.equal(1);
             res[0].msg.should.equal(payload.msg);
@@ -619,23 +448,20 @@ describe(method + ' ' + endpoint, function() {
             (typeof res[0].date).should.equal('object');
             res[0].ip.should.equal(helper.goodIp);
             res[0].userAgent.should.equal(helper.goodUserAgent);
-            res[0].result.status.should.equal(1);
-            res[0].result.succeeded.should.equal(2);
-            res[0].result.failed.should.equal(0);
+            res[0].result.status.should.equal(0);
+            res[0].result.message.should.equal('No keys registered');
             done();
           })
           .catch(done);
-        }
-      });
-    })
-    .catch(done);
+      }
+    });
   });
 
-
-  it('should succeed with at least one client failing', function(done) {
+  it('should succeed with all clients succeeding', function(done) {
     var payload = {
       key: helper.config.get('privateAuth'),
-      msg: 'xxx'
+      msg: 'xxx',
+      title: 'yyy',
     };
 
     var options = {
@@ -643,13 +469,161 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 200;
 
     options.headers = {
       'User-Agent': helper.goodUserAgent,
-      'X-Forwarded-For': helper.goodIp
+      'X-Forwarded-For': helper.goodIp,
+    };
+
+    var data = _.cloneDeep(helper.goodClients);
+
+    nock(helper.gcmUrl)
+      // the web-push-encryption module will try to call the actual endpoint url, so we just use nock to redirect any actual called url to our own fake url, which in return will respond again through nock
+      .filteringPath(function() {
+        return '/xxx';
+      })
+      .post('/xxx')
+      .times(data.length)
+      .reply(201);
+
+    Promise.map(data, function(item) {
+      return collection.add(item).catch(done);
+    })
+      .then(function() {
+        request(options, function(err, response) {
+          if (err) {
+            done(err);
+          } else {
+            var body = response.body;
+            response.statusCode.should.equal(statusCode);
+            body.status.should.equal(1);
+            body.succeeded.should.equal(data.length);
+            body.failed.should.equal(0);
+
+            helper.collectionMessages
+              .find()
+              .toArray()
+              .then(function(res) {
+                res.length.should.equal(1);
+                res[0].msg.should.equal(payload.msg);
+                res[0].title.should.equal(payload.title);
+                (typeof res[0].date).should.equal('object');
+                res[0].ip.should.equal(helper.goodIp);
+                res[0].userAgent.should.equal(helper.goodUserAgent);
+                res[0].result.status.should.equal(1);
+                res[0].result.succeeded.should.equal(data.length);
+                res[0].result.failed.should.equal(0);
+                done();
+              })
+              .catch(done);
+          }
+        });
+      })
+      .catch(done);
+  });
+
+  it('should succeed with active clients succeeding', function(done) {
+    var payload = {
+      key: helper.config.get('privateAuth'),
+      msg: 'xxx',
+    };
+
+    var options = {
+      method: method,
+      baseUrl: helper.baseUrl,
+      url: endpoint,
+      json: true,
+      body: payload,
+    };
+    var statusCode = 200;
+
+    options.headers = {
+      'User-Agent': helper.goodUserAgent,
+      'X-Forwarded-For': helper.goodIp,
+    };
+
+    var data = _.cloneDeep(helper.goodClients);
+
+    nock(helper.gcmUrl)
+      // the web-push-encryption module will try to call the actual endpoint url, so we just use nock to redirect any actual called url to our own fake url, which in return will respond again through nock
+      .filteringPath(function() {
+        return '/xxx';
+      })
+      .post('/xxx')
+      .times(data.length)
+      .reply(201);
+
+    Promise.map(data, function(item) {
+      return collection.add(item).catch(done);
+    })
+      .then(function(res) {
+        // remove one of the clients
+        var query = {
+          _id: res[0]._id,
+          endpoint: res[0].endpoint,
+          p256dh: res[0].keys.p256dh,
+          auth: res[0].keys.auth,
+        };
+        var update = {
+          ip: helper.goodIp,
+          userAgent: helper.goodUserAgent,
+        };
+        return collection.remove(query, update);
+      })
+      .then(function() {
+        request(options, function(err, response) {
+          if (err) {
+            done(err);
+          } else {
+            var body = response.body;
+            response.statusCode.should.equal(statusCode);
+            body.status.should.equal(1);
+            body.succeeded.should.equal(2);
+            body.failed.should.equal(0);
+
+            helper.collectionMessages
+              .find()
+              .toArray()
+              .then(function(res) {
+                res.length.should.equal(1);
+                res[0].msg.should.equal(payload.msg);
+                res[0].title.should.equal('');
+                (typeof res[0].date).should.equal('object');
+                res[0].ip.should.equal(helper.goodIp);
+                res[0].userAgent.should.equal(helper.goodUserAgent);
+                res[0].result.status.should.equal(1);
+                res[0].result.succeeded.should.equal(2);
+                res[0].result.failed.should.equal(0);
+                done();
+              })
+              .catch(done);
+          }
+        });
+      })
+      .catch(done);
+  });
+
+  it('should succeed with at least one client failing', function(done) {
+    var payload = {
+      key: helper.config.get('privateAuth'),
+      msg: 'xxx',
+    };
+
+    var options = {
+      method: method,
+      baseUrl: helper.baseUrl,
+      url: endpoint,
+      json: true,
+      body: payload,
+    };
+    var statusCode = 200;
+
+    options.headers = {
+      'User-Agent': helper.goodUserAgent,
+      'X-Forwarded-For': helper.goodIp,
     };
 
     var data = _.cloneDeep(helper.goodClients);
@@ -661,52 +635,55 @@ describe(method + ' ' + endpoint, function() {
       // the web-push-encryption module will try to call the actual endpoint url, so we just use nock to redirect any actual called url to our own fake url, which in return will respond again through nock
       .filteringPath(function(p) {
         var myP = p.split('/').pop();
-        // filter the clients I want to succeed and the ones I want to 
+        // filter the clients I want to succeed and the ones I want to
         if (myP === goodP) {
           return '/xxx';
-        }
-        else {
+        } else {
           return '/yyy';
         }
       })
       .post('/xxx')
-        .reply(201)
-      .post('/yyy').times(2)
-        .replyWithError({ statusCode: 400, statusMessage: 'UnauthorizedRegistration' });
+      .reply(201)
+      .post('/yyy')
+      .times(2)
+      .replyWithError({
+        statusCode: 400,
+        statusMessage: 'UnauthorizedRegistration',
+      });
 
     Promise.map(data, function(item) {
-      return collection.add(item)
-      .catch(done);
+      return collection.add(item).catch(done);
     })
-    .then(function() {
-      request(options, function(err, response) {
-        if (err) {
-          done(err);
-        }
-        else {
-          var body = response.body;
-          response.statusCode.should.equal(statusCode);
-          body.status.should.equal(0);
-          body.succeeded.should.equal(1);
-          body.failed.should.equal(2);
+      .then(function() {
+        request(options, function(err, response) {
+          if (err) {
+            done(err);
+          } else {
+            var body = response.body;
+            response.statusCode.should.equal(statusCode);
+            body.status.should.equal(0);
+            body.succeeded.should.equal(1);
+            body.failed.should.equal(2);
 
-          helper.collectionMessages.find().toArray()
-          .then(function(res) {
-            res.length.should.equal(1);
-            res[0].msg.should.equal(payload.msg);
-            res[0].title.should.equal('');
-            (typeof res[0].date).should.equal('object');
-            res[0].ip.should.equal(helper.goodIp);
-            res[0].userAgent.should.equal(helper.goodUserAgent);
-            res[0].result.status.should.equal(0);
-            res[0].result.succeeded.should.equal(1);
-            res[0].result.failed.should.equal(2);
-            done();
-          })
-          .catch(done);
-        }
-      });
-    })
-    .catch(done);
+            helper.collectionMessages
+              .find()
+              .toArray()
+              .then(function(res) {
+                res.length.should.equal(1);
+                res[0].msg.should.equal(payload.msg);
+                res[0].title.should.equal('');
+                (typeof res[0].date).should.equal('object');
+                res[0].ip.should.equal(helper.goodIp);
+                res[0].userAgent.should.equal(helper.goodUserAgent);
+                res[0].result.status.should.equal(0);
+                res[0].result.succeeded.should.equal(1);
+                res[0].result.failed.should.equal(2);
+                done();
+              })
+              .catch(done);
+          }
+        });
+      })
+      .catch(done);
   });
 });

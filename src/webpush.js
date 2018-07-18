@@ -2,7 +2,6 @@ var Promise = require('bluebird');
 var webpush = require('web-push');
 var config = require('./config');
 
-
 webpush.setGCMAPIKey(config.get('gcmAuth'));
 
 // Send push with message to a single subscription.
@@ -17,7 +16,7 @@ var sendPush = function(subscription, msg, title) {
   var params = {
     payload: message,
     userPublicKey: subscription.keys.p256dh,
-    userAuth: subscription.keys.auth
+    userAuth: subscription.keys.auth,
   };
   return webpush.sendNotification(subscription.endpoint, params);
 };
@@ -35,23 +34,23 @@ module.exports.sendPushes = function(subscriptions, msg, title) {
   var d = [];
   return Promise.map(subscriptions, function(subscription) {
     return sendPush(subscription, msg, title)
-    .then(function(res) {
-      r++;
-      return res;
+      .then(function(res) {
+        r++;
+        return res;
+      })
+      .catch(function(err) {
+        e++;
+        //TODO is this the correct check?
+        // if (err.statusCode === 400) {
+        d.push(subscription);
+        // }
+        return Promise.reject(err);
+      });
+  })
+    .then(function() {
+      return { e: e, r: r, d: d };
     })
-    .catch(function(err) {
-      e++;
-      //TODO is this the correct check?
-      // if (err.statusCode === 400) {
-      d.push(subscription);
-      // }
-      return Promise.reject(err);
+    .catch(function() {
+      return Promise.reject({ e: e, r: r, d: d });
     });
-  })
-  .then(function() {
-    return { e: e, r: r, d: d };
-  })
-  .catch(function() {
-    return Promise.reject({ e: e, r: r, d: d });
-  });
 };

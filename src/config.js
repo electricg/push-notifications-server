@@ -18,9 +18,8 @@ var DEFAULT = {
 
 nconf
   .env()
-  .file(__dirname + '/../config.json')
-  .defaults(DEFAULT)
-;
+  .file(`${__dirname}/../config.json`)
+  .defaults(DEFAULT);
 
 // some of the settings need parsing, so we create a public layer accessible to the application, while hiding the original ones
 nconf.set('public:port', ~~nconf.get('PORT'));
@@ -33,9 +32,12 @@ nconf.set('public:gcmAuth', nconf.get('GCM_AUTH'));
 nconf.set('public:collectionClients', nconf.get('COLLECTION_CLIENTS'));
 nconf.set('public:collectionMessages', nconf.get('COLLECTION_MESSAGES'));
 nconf.set('public:welcomeMsg', nconf.get('WELCOME_MSG'));
-nconf.set('public:publicList', nconf.get('PUBLIC_LIST') === 'true' || nconf.get('PUBLIC_LIST') === true);
+nconf.set(
+  'public:publicList',
+  nconf.get('PUBLIC_LIST') === 'true' || nconf.get('PUBLIC_LIST') === true
+);
 nconf.set('public:authHeader', nconf.get('AUTH_HEADER'));
 
 module.exports.get = function(param) {
-  return nconf.get('public:' + param);
+  return nconf.get(`public:${param}`);
 };

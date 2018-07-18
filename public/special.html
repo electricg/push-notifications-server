@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,195 +10,209 @@
   <meta name="robots" content="noindex,nofollow">
   <title>Push Notifications Admin</title>
   <style>
-html {
-  font-size: 20px;
-}
-body {
-  background: #EEE;
-  color: #333;
-  font-family: sans-serif;
-  font-variant: small-caps;
-  margin: 0 auto;
-  max-width: 600px;
-  width: 95%;
-}
-h1 {
-  font-size: 1.2rem;
-}
-div {
-  -webkit-align-items: center;
-          align-items: center;
-  display: -webkit-flex;
-  display:         flex;
-  -webkit-flex-wrap: wrap;
-          flex-wrap: wrap;
-  margin: .5em 0;
-}
-label {
-  margin-right: .5em;
-  width: 5em;
-}
-input {
-  border: 1px solid #333;
-  border-radius: 3px;
-  font-family: inherit;
-  font-size: inherit;
-  padding: .3em;
-  -webkit-appearance: none;
-}
-input:not([type=submit]) {
-  -webkit-flex: 1;
-          flex: 1;
-}
-input[type=submit] {
-  background: #C0C0C0;
-  cursor: pointer;
-  font-variant: small-caps;
-  margin-top: 1em;
-  width: 100%;
-}
-.counter {
-  text-align: right;
-  width: 2em;
-}
-output {
-  background: #FFF;
-  border: 1px dashed #333;
-  font-family: monospace;
-  display: none;
-  margin: 1em 0;
-  overflow: auto;
-  padding: 1em;
-  white-space: pre;
-}
+    html {
+      font-size: 20px;
+    }
 
+    body {
+      background: #EEE;
+      color: #333;
+      font-family: sans-serif;
+      font-variant: small-caps;
+      margin: 0 auto;
+      max-width: 600px;
+      width: 95%;
+    }
+
+    h1 {
+      font-size: 1.2rem;
+    }
+
+    div {
+      -webkit-align-items: center;
+      align-items: center;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-flex-wrap: wrap;
+      flex-wrap: wrap;
+      margin: .5em 0;
+    }
+
+    label {
+      margin-right: .5em;
+      width: 5em;
+    }
+
+    input {
+      border: 1px solid #333;
+      border-radius: 3px;
+      font-family: inherit;
+      font-size: inherit;
+      padding: .3em;
+      -webkit-appearance: none;
+    }
+
+    input:not([type=submit]) {
+      -webkit-flex: 1;
+      flex: 1;
+    }
+
+    input[type=submit] {
+      background: #C0C0C0;
+      cursor: pointer;
+      font-variant: small-caps;
+      margin-top: 1em;
+      width: 100%;
+    }
+
+    .counter {
+      text-align: right;
+      width: 2em;
+    }
+
+    output {
+      background: #FFF;
+      border: 1px dashed #333;
+      font-family: monospace;
+      display: none;
+      margin: 1em 0;
+      overflow: auto;
+      padding: 1em;
+      white-space: pre;
+    }
   </style>
 </head>
+
 <body>
 
-<h1>Push Notifications Admin</h1>
-<form action="" method="POST" id="form">
-  <div>
-    <label for="key">Auth Key <abbr title="required">*</abbr></label>
-    <input type="text" id="key" required>
-  </div>
-  <div>
-    <label for="title">Title</label>
-    <input type="text" id="title" maxlength="50" autocomplete="off">
-    <span id="title-length" class="counter"></span>
-  </div>
-  <div>
-    <label for="msg">Message <abbr title="required">*</abbr></label>
-    <input type="text" id="msg" maxlength="120" required autocomplete="off">
-    <span id="msg-length" class="counter"></span>
-  </div>
-  <div>
-    <input type="submit" value="Send">
-  </div>
-</form>
-<output id="output" form="form"></output>
+  <h1>Push Notifications Admin</h1>
+  <form action="" method="POST" id="form">
+    <div>
+      <label for="key">Auth Key
+        <abbr title="required">*</abbr>
+      </label>
+      <input type="text" id="key" required>
+    </div>
+    <div>
+      <label for="title">Title</label>
+      <input type="text" id="title" maxlength="50" autocomplete="off">
+      <span id="title-length" class="counter"></span>
+    </div>
+    <div>
+      <label for="msg">Message
+        <abbr title="required">*</abbr>
+      </label>
+      <input type="text" id="msg" maxlength="120" required autocomplete="off">
+      <span id="msg-length" class="counter"></span>
+    </div>
+    <div>
+      <input type="submit" value="Send">
+    </div>
+  </form>
+  <output id="output" form="form"></output>
 
-<script>
-var $$ = document.querySelector.bind(document);
+  <script>
+    var $$ = document.querySelector.bind(document);
 
-function prev(event) {
-  if (event.preventDefault) {
-    event.preventDefault();
-  }
-  else {
-    event.returnValue = false;
-  }
-}
-
-function showOutput(title, obj) {
-  var res = title;
-  if (obj) {
-    res += '\n' + JSON.stringify(obj, null, 2);
-  }
-  $output.innerHTML = res;
-  $output.style.display = 'block';
-}
-
-function sendPost(opt) {
-  return new Promise(function(resolve, reject) {
-    var request = new XMLHttpRequest();
-    request.open('POST', opt.url, true);
-    request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
-    request.responseType = 'json';
-
-    request.onload = function() {
-      if (request.status >= 200 && request.status < 400) {
-        // Success!
-        resolve({ status: request.status, response: request.response });
-      } else {
-        // We reached our target server, but it returned an error
-        reject({ status: request.status, response: request.response });
+    function prev(event) {
+      if (event.preventDefault) {
+        event.preventDefault();
       }
-    };
-
-    request.onerror = function(err) {
-      reject(err);
-    };
-
-    request.onprogress = function() {
-      console.log('Sending...');
-      showOutput('Sending...');
-    };
-
-    request.send(JSON.stringify(opt.data));
-  });
-}
-
-function checkTitleLength() {
-  var len = $title.value.length;
-  $titleLength.innerHTML = titleMax - len;
-}
-function checkMsgLength() {
-  var len = $msg.value.length;
-  $msgLength.innerHTML = msgMax - len;
-}
-
-var $form = $$('#form');
-var $key = $$('#key');
-var $title = $$('#title');
-var $msg = $$('#msg');
-var $output = $$('#output');
-var $titleLength = $$('#title-length');
-var titleMax = $title.getAttribute('maxlength');
-var $msgLength = $$('#msg-length');
-var msgMax = $msg.getAttribute('maxlength');
-
-checkTitleLength();
-checkMsgLength();
-$title.addEventListener('keyup', checkTitleLength);
-$msg.addEventListener('keyup', checkMsgLength);
-
-$form.addEventListener('submit', function(event) {
-  prev(event);
-
-  var action = $form.action;
-  var key = $key.value;
-  var title = $title.value;
-  var msg = $msg.value;
-  var opt = {
-    url: action,
-    data: {
-      key: key,
-      msg: msg
+      else {
+        event.returnValue = false;
+      }
     }
-  };
-  if (title) {
-    opt.data.title = title;
-  }
-  sendPost(opt)
-  .then(function(res) {
-    showOutput('Success!', res);
-  })
-  .catch(function(err) {
-    showOutput('Failed :(', err);
-  });
-});
-</script>
+
+    function showOutput(title, obj) {
+      var res = title;
+      if (obj) {
+        res += '\n' + JSON.stringify(obj, null, 2);
+      }
+      $output.innerHTML = res;
+      $output.style.display = 'block';
+    }
+
+    function sendPost(opt) {
+      return new Promise(function (resolve, reject) {
+        var request = new XMLHttpRequest();
+        request.open('POST', opt.url, true);
+        request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+        request.responseType = 'json';
+
+        request.onload = function () {
+          if (request.status >= 200 && request.status < 400) {
+            // Success!
+            resolve({ status: request.status, response: request.response });
+          } else {
+            // We reached our target server, but it returned an error
+            reject({ status: request.status, response: request.response });
+          }
+        };
+
+        request.onerror = function (err) {
+          reject(err);
+        };
+
+        request.onprogress = function () {
+          console.log('Sending...');
+          showOutput('Sending...');
+        };
+
+        request.send(JSON.stringify(opt.data));
+      });
+    }
+
+    function checkTitleLength() {
+      var len = $title.value.length;
+      $titleLength.innerHTML = titleMax - len;
+    }
+    function checkMsgLength() {
+      var len = $msg.value.length;
+      $msgLength.innerHTML = msgMax - len;
+    }
+
+    var $form = $$('#form');
+    var $key = $$('#key');
+    var $title = $$('#title');
+    var $msg = $$('#msg');
+    var $output = $$('#output');
+    var $titleLength = $$('#title-length');
+    var titleMax = $title.getAttribute('maxlength');
+    var $msgLength = $$('#msg-length');
+    var msgMax = $msg.getAttribute('maxlength');
+
+    checkTitleLength();
+    checkMsgLength();
+    $title.addEventListener('keyup', checkTitleLength);
+    $msg.addEventListener('keyup', checkMsgLength);
+
+    $form.addEventListener('submit', function (event) {
+      prev(event);
+
+      var action = $form.action;
+      var key = $key.value;
+      var title = $title.value;
+      var msg = $msg.value;
+      var opt = {
+        url: action,
+        data: {
+          key: key,
+          msg: msg
+        }
+      };
+      if (title) {
+        opt.data.title = title;
+      }
+      sendPost(opt)
+        .then(function (res) {
+          showOutput('Success!', res);
+        })
+        .catch(function (err) {
+          showOutput('Failed :(', err);
+        });
+    });
+  </script>
 
 </body>
+
 </html>
