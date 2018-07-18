@@ -1,7 +1,7 @@
 module.exports.formatError = function(msg, err) {
   var obj = {
     status: 0,
-    error: msg
+    error: msg,
   };
 
   if (err) {
@@ -10,13 +10,12 @@ module.exports.formatError = function(msg, err) {
       obj.details = err.message;
     }
     if (err.statusCode || err.statusMessage) {
-      obj.details = err.statusCode + ' ' + err.statusMessage;
+      obj.details = `${err.statusCode} ${err.statusMessage}`;
     }
   }
 
   return obj;
 };
-
 
 module.exports.formatOrigins = function(input) {
   var output = input;

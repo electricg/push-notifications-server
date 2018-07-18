@@ -1,6 +1,6 @@
 // Static endpoint for checking server status and debugging
-var package = require('../../package.json');
+var pkg = require('../../package.json');
 
 module.exports.handler = function(request, reply) {
-  reply({ status: 1, version: package.version });
+  reply({ status: 1, version: pkg.version });
 };

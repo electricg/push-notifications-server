@@ -11,21 +11,20 @@ var collection = require('../../src/collections/clients');
 var endpoint = '/clients';
 var method = 'POST';
 
-describe(method + ' ' + endpoint, function() {
+describe(`${method} ${endpoint}`, function() {
   it('should fail with an empty body', function(done) {
     var options = {
       method: method,
       baseUrl: helper.baseUrl,
       url: endpoint,
-      json: true
+      json: true,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -34,7 +33,6 @@ describe(method + ' ' + endpoint, function() {
       }
     });
   });
-
 
   it('should fail because of no endpoint value in payload', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
@@ -45,15 +43,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -63,7 +60,6 @@ describe(method + ' ' + endpoint, function() {
       }
     });
   });
-
 
   it('should fail because of no keys.p256dh value in payload', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
@@ -74,15 +70,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -92,7 +87,6 @@ describe(method + ' ' + endpoint, function() {
       }
     });
   });
-
 
   it('should fail because of no keys.auth value in payload', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
@@ -103,15 +97,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -121,7 +114,6 @@ describe(method + ' ' + endpoint, function() {
       }
     });
   });
-
 
   it('should fail because of additional value in payload not expected', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
@@ -132,15 +124,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -151,7 +142,6 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should fail because of additional value in payload keys not expected', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
     payload.keys.fakeParam = 'xxx';
@@ -161,15 +151,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -180,7 +169,6 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should fail because of not string endpoint value in payload', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
     payload.endpoint = 1;
@@ -190,15 +178,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -208,7 +195,6 @@ describe(method + ' ' + endpoint, function() {
       }
     });
   });
-
 
   it('should fail because of not string keys.p256dh value in payload', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
@@ -219,15 +205,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -238,7 +223,6 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should fail because of not string keys.auth value in payload', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
     payload.keys.auth = 1;
@@ -248,15 +232,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.error.should.equal('Bad Request');
@@ -267,7 +250,6 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should fail and return 400 because of invalid endpoint scheme', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
     payload.endpoint = 'http://android.googleapis.com';
@@ -277,15 +259,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         body.error.should.equal('Bad Request');
         should.exist(body.validation);
@@ -296,7 +277,6 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should fail and return 400 because of invalid keys.p256dh', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
     payload.keys.p256dh = 'xxx';
@@ -306,15 +286,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(0);
@@ -324,7 +303,6 @@ describe(method + ' ' + endpoint, function() {
       }
     });
   });
-
 
   it('should fail and return 400 because of invalid keys.auth', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
@@ -335,15 +313,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(0);
@@ -354,7 +331,6 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should fail and return 400 because of unauthorized endpoint', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
     payload.endpoint = helper.badClients[0].endpoint;
@@ -364,7 +340,7 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
@@ -377,23 +353,21 @@ describe(method + ' ' + endpoint, function() {
         return '/xxx';
       })
       .post('/xxx')
-        .replyWithError({ statusCode: errorCode, statusMessage: errorMessage });
+      .replyWithError({ statusCode: errorCode, statusMessage: errorMessage });
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(0);
         body.error.should.equal('Error registering subscription to GCM');
-        body.details.should.equal(errorCode + ' ' + errorMessage);
+        body.details.should.equal(`${errorCode} ${errorMessage}`);
         done();
       }
     });
   });
-
 
   it('should fail and return 400 because of unauthorized keys.p256dh', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
@@ -404,15 +378,14 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(0);
@@ -423,7 +396,6 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should fail and return 400 because of unauthorized keys.auth', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
     payload.keys.auth = helper.badClients[0].keys.auth;
@@ -433,7 +405,7 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
@@ -446,23 +418,21 @@ describe(method + ' ' + endpoint, function() {
         return '/xxx';
       })
       .post('/xxx')
-        .replyWithError({ statusCode: errorCode, statusMessage: errorMessage });
+      .replyWithError({ statusCode: errorCode, statusMessage: errorMessage });
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(0);
         body.error.should.equal('Error registering subscription to GCM');
-        body.details.should.equal(errorCode + ' ' + errorMessage);
+        body.details.should.equal(`${errorCode} ${errorMessage}`);
         done();
       }
     });
   });
-
 
   it('should fail and return 400 because of an error with GCM server', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
@@ -472,7 +442,7 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
@@ -485,13 +455,12 @@ describe(method + ' ' + endpoint, function() {
         return '/xxx';
       })
       .post('/xxx')
-        .replyWithError({ statusCode: errorCode, statusMessage: errorMessage });
+      .replyWithError({ statusCode: errorCode, statusMessage: errorMessage });
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(0);
@@ -502,7 +471,6 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should fail and return 400 because GCM server was unreachable', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
 
@@ -511,7 +479,7 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 400;
 
@@ -523,23 +491,21 @@ describe(method + ' ' + endpoint, function() {
         return '/xxx';
       })
       .post('/xxx')
-        .replyWithError(errorCode);
+      .replyWithError(errorCode);
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(0);
         body.error.should.equal('Error registering subscription to GCM');
-        body.details.should.equal(errorCode + '');
+        body.details.should.equal(`${errorCode}`);
         done();
       }
     });
   });
-
 
   it('should succeed to register a valid client', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
@@ -549,7 +515,7 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 200;
 
@@ -559,13 +525,12 @@ describe(method + ' ' + endpoint, function() {
         return '/xxx';
       })
       .post('/xxx')
-        .reply(201);
+      .reply(201);
 
     request(options, function(err, response) {
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(1);
@@ -575,7 +540,6 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should fail to register a valid client when it is already in the db', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
 
@@ -584,7 +548,7 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 401;
 
@@ -594,23 +558,22 @@ describe(method + ' ' + endpoint, function() {
         return '/xxx';
       })
       .post('/xxx')
-        .reply(201);
+      .reply(201);
 
-    collection.add(payload)
-    .then(function() {
-      request(options, function(err, response) {
-        if (err) {
-          done(err);
-        }
-        else {
-          response.statusCode.should.equal(statusCode);
-          done();
-        }
-      });
-    })
-    .catch(done);
+    collection
+      .add(payload)
+      .then(function() {
+        request(options, function(err, response) {
+          if (err) {
+            done(err);
+          } else {
+            response.statusCode.should.equal(statusCode);
+            done();
+          }
+        });
+      })
+      .catch(done);
   });
-
 
   it('should fail and return 500 because of a problem with the db', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
@@ -620,7 +583,7 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 500;
 
@@ -630,7 +593,7 @@ describe(method + ' ' + endpoint, function() {
         return '/xxx';
       })
       .post('/xxx')
-        .reply(201);
+      .reply(201);
 
     var revert = sinon.stub(helper.collectionClients, 'insert', function() {
       return Promise.reject(new Error('fake db error'));
@@ -640,8 +603,7 @@ describe(method + ' ' + endpoint, function() {
       revert.restore();
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(0);
@@ -652,7 +614,6 @@ describe(method + ' ' + endpoint, function() {
     });
   });
 
-
   it('should fail and return 500 because of a problem with inserting the data into the db', function(done) {
     var payload = _.cloneDeep(helper.goodClients[0]);
 
@@ -661,7 +622,7 @@ describe(method + ' ' + endpoint, function() {
       baseUrl: helper.baseUrl,
       url: endpoint,
       json: true,
-      body: payload
+      body: payload,
     };
     var statusCode = 500;
 
@@ -671,13 +632,13 @@ describe(method + ' ' + endpoint, function() {
         return '/xxx';
       })
       .post('/xxx')
-        .reply(201);
+      .reply(201);
 
     var revert = sinon.stub(helper.collectionClients, 'insert', function() {
       return Promise.resolve({
         result: {
-          ok: 0
-        }
+          ok: 0,
+        },
       });
     });
 
@@ -685,8 +646,7 @@ describe(method + ' ' + endpoint, function() {
       revert.restore();
       if (err) {
         done(err);
-      }
-      else {
+      } else {
         var body = response.body;
         response.statusCode.should.equal(statusCode);
         body.status.should.equal(0);
