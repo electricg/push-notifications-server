@@ -1,5 +1,4 @@
 var Hapi = require('hapi');
-var Promise = require('bluebird');
 var config = require('./config');
 var db = require('./db');
 

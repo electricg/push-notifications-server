@@ -77,9 +77,7 @@ before(function(done) {
     .then(function() {
       mongoose.connect(
         config.get('mongodbUrl'),
-        {
-          promiseLibrary: bluebird,
-        },
+        {},
         function(err) {
           server = require('../index');
           done(err);

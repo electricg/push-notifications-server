@@ -1,12 +1,10 @@
 var Mongoose = require('mongoose');
-var bluebird = require('bluebird');
 var config = require('./config');
 
 var connect = function(cb) {
   Mongoose.connect(
     config.get('mongodbUrl'),
     {
-      promiseLibrary: bluebird,
       server: {
         auto_reconnect: true,
         socketOptions: {

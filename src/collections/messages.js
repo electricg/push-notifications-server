@@ -1,4 +1,3 @@
-var Promise = require('bluebird');
 var config = require('../config');
 var db = require('../db');
 var collection = db.db.collection(config.get('collectionMessages'));

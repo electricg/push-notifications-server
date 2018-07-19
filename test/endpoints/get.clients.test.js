@@ -1,5 +1,4 @@
 /* global describe, it, before, after */
-var Promise = require('bluebird');
 var request = require('request');
 var sinon = require('sinon');
 var _ = require('lodash');

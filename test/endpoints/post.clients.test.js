@@ -1,5 +1,4 @@
 /* global describe, it */
-var Promise = require('bluebird');
 var nock = require('nock');
 var request = require('request');
 var should = require('should');

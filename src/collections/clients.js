@@ -1,4 +1,3 @@
-var Promise = require('bluebird');
 var config = require('../config');
 var db = require('../db');
 var collection = db.db.collection(config.get('collectionClients'));
@@ -41,7 +40,7 @@ module.exports.remove = function(query, update) {
 };
 
 module.exports.removeInvalid = function(arr) {
-  return Promise.map(arr, function(query) {
+  const promises = arr.map(function(query) {
     var _update = {
       $set: {
         status: false,
@@ -58,6 +57,8 @@ module.exports.removeInvalid = function(arr) {
     };
     return collection.update(query, _update, _options);
   });
+
+  return Promise.all(promises);
 };
 
 module.exports.list = function(query, projection) {
