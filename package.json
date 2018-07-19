@@ -6,8 +6,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node .",
-    "covertest": "rm -rf coverage && ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha test/{**,**/*}/*.test.js",
-    "test": "npm run-script covertest",
+    "covertest": "rm -rf coverage && ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha",
+    "test": "npm run covertest",
     "posttest": "./node_modules/.bin/istanbul check-coverage --statements 100 --functions 100 --branches 100 --lines 100"
   },
   "author": "Giulia Alfonsi",
@@ -30,7 +30,7 @@
     "eslint-plugin-prettier": "^2.6.2",
     "istanbul": "^0.4.5",
     "lodash": "^4.17.10",
-    "mocha": "^2.5.3",
+    "mocha": "^5.2.0",
     "mockgoose": "^7.3.5",
     "nock": "^9.4.2",
     "prettier": "^1.13.7",
