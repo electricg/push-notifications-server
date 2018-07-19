@@ -1,5 +1,4 @@
 /* global describe, it */
-var Promise = require('bluebird');
 var nock = require('nock');
 var request = require('request');
 var rewire = require('rewire');
@@ -495,9 +494,20 @@ describe(`${method} ${endpoint}`, function() {
       .times(data.length)
       .reply(201);
 
-    Promise.map(data, function(item) {
-      return collection.add(item).catch(done);
-    })
+    const promises = data.map(item => {
+      return new Promise((resolve, reject) => {
+        collection
+          .add(item)
+          .then(res => {
+            resolve(res);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    });
+
+    Promise.all(promises)
       .then(function() {
         request(options, function(err, response) {
           if (err) {
@@ -562,9 +572,20 @@ describe(`${method} ${endpoint}`, function() {
       .times(data.length)
       .reply(201);
 
-    Promise.map(data, function(item) {
-      return collection.add(item).catch(done);
-    })
+    const promises = data.map(item => {
+      return new Promise((resolve, reject) => {
+        collection
+          .add(item)
+          .then(res => {
+            resolve(res);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    });
+
+    Promise.all(promises)
       .then(function(res) {
         // remove one of the clients
         var query = {
@@ -657,9 +678,20 @@ describe(`${method} ${endpoint}`, function() {
         statusMessage: 'UnauthorizedRegistration',
       });
 
-    Promise.map(data, function(item) {
-      return collection.add(item).catch(done);
-    })
+    const promises = data.map(item => {
+      return new Promise((resolve, reject) => {
+        collection
+          .add(item)
+          .then(res => {
+            resolve(res);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      });
+    });
+
+    Promise.all(promises)
       .then(function() {
         request(options, function(err, response) {
           if (err) {

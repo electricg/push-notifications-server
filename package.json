@@ -17,7 +17,6 @@
     "url": "https://github.com/electricg/push-notifications-server.git"
   },
   "dependencies": {
-    "bluebird": "^3.4.1",
     "hapi": "^13.5.0",
     "joi": "^9.0.4",
     "mongoose": "^4.5.4",

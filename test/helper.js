@@ -4,8 +4,6 @@ var MMongoose = Mongoose.Mongoose;
 var mongoose = new MMongoose();
 var mockgoose = require('mockgoose');
 var nock = require('nock');
-var bluebird = require('bluebird');
-var Promise = bluebird;
 var _ = require('lodash');
 var config = require('../src/config');
 var db = require('../src/db');
@@ -92,9 +90,12 @@ afterEach(function(done) {
   if (mongoose.isMocked === true) {
     mockgoose.reset(function() {
       var collections = _.keys(Mongoose.connections[0].collections);
-      Promise.map(collections, function(collection) {
+
+      const promises = collections.map(collection => {
         return db.db.collection(collection).remove();
-      })
+      });
+
+      Promise.all(promises)
         .then(function() {
           done();
         })
