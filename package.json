@@ -19,7 +19,7 @@
   "dependencies": {
     "hapi": "^13.5.0",
     "joi": "^9.0.4",
-    "mongoose": "^4.5.4",
+    "mongoose": "^5.2.4",
     "nconf": "^0.8.4",
     "web-push": "^2.2.0"
   },

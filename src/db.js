@@ -15,9 +15,10 @@ var connect = function(cb) {
       },
     },
     function(err) {
-      if (err) {
-        console.log('Error', err);
-      }
+      // TODO find the correct way to log the error
+      // if (err) {
+      //   console.log('Error', err);
+      // }
       cb();
     }
   );
