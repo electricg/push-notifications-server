@@ -2,7 +2,8 @@
 var Mongoose = require('mongoose');
 var MMongoose = Mongoose.Mongoose;
 var mongoose = new MMongoose();
-var mockgoose = require('mockgoose');
+var Mockgoose = require('mockgoose').Mockgoose;
+var mockgoose = new Mockgoose(mongoose);
 var nock = require('nock');
 var _ = require('lodash');
 var config = require('../src/config');
@@ -71,7 +72,8 @@ module.exports.goodHeaderAuthorization = `${config.get('authHeader')}endpoint=${
 },p256dh=${goodClients[0].keys.p256dh},auth=${goodClients[0].keys.auth}`;
 
 before(function(done) {
-  mockgoose(mongoose)
+  mockgoose
+    .prepareStorage()
     .then(function() {
       mongoose.connect(
         config.get('mongodbUrl'),
@@ -87,8 +89,8 @@ before(function(done) {
 
 afterEach(function(done) {
   nock.cleanAll();
-  if (mongoose.isMocked === true) {
-    mockgoose.reset(function() {
+  if (mockgoose.helper.isMocked() === true) {
+    mockgoose.helper.reset().then(() => {
       var collections = _.keys(Mongoose.connections[0].collections);
 
       const promises = collections.map(collection => {
