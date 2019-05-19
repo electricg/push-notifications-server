@@ -25,7 +25,6 @@ var routes = [
     path: `/${config.get('privatePath')}`,
     module: 'post.special',
   },
-  { method: 'POST', path: '/giulia', module: 'post.giulia' },
 ];
 
 routes.forEach(function(route) {
