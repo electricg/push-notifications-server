@@ -12,12 +12,21 @@ var sendPush = function(subscription, msg, title) {
     message.t = title;
   }
   message = JSON.stringify(message);
-  var params = {
-    payload: message,
-    userPublicKey: subscription.keys.p256dh,
-    userAuth: subscription.keys.auth,
+  // var params = {
+  //   payload: message,
+  //   userPublicKey: subscription.keys.p256dh,
+  //   userAuth: subscription.keys.auth,
+  // };
+  var pushSubscription = {
+    endpoint: subscription.endpoint,
+    keys: {
+      p256dh: subscription.keys.p256dh,
+      auth: subscription.keys.auth,
+    },
   };
-  return webpush.sendNotification(subscription.endpoint, params);
+  var payload = message;
+  var options = {};
+  return webpush.sendNotification(pushSubscription, payload, options);
 };
 
 // Send push with welcome message when subscribtion data arrives

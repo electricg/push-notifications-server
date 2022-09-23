@@ -18,7 +18,7 @@
   "dependencies": {
     "@electricg/hapi-mongodb-server": "^1.0.3",
     "nconf": "^0.10.0",
-    "web-push": "^2.2.0"
+    "web-push": "^3.3.5"
   },
   "homepage": "https://github.com/electricg/push-notifications-server#readme",
   "devDependencies": {
