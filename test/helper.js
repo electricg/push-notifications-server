@@ -7,7 +7,7 @@ var mockgoose = new Mockgoose(mongoose);
 var nock = require('nock');
 var _ = require('lodash');
 var config = require('../src/config');
-var db = require('../src/db');
+var db = require('@electricg/hapi-mongodb-server/src/db');
 var server;
 
 module.exports.config = config;

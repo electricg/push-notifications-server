@@ -1,5 +1,5 @@
 var config = require('../config');
-var db = require('../db');
+var db = require('@electricg/hapi-mongodb-server/src/db');
 var collection = db.db.collection(config.get('collectionMessages'));
 
 module.exports.add = function(insert) {

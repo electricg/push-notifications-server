@@ -16,9 +16,7 @@
     "url": "https://github.com/electricg/push-notifications-server.git"
   },
   "dependencies": {
-    "hapi": "^13.5.0",
-    "joi": "^9.0.4",
-    "mongoose": "^5.2.7",
+    "@electricg/hapi-mongodb-server": "^1.0.3",
     "nconf": "^0.10.0",
     "web-push": "^2.2.0"
   },
